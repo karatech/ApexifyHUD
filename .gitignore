@@ -1,0 +1,52 @@
+# ---- Visual Studio ----
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ---- Build dirs ----
+/build/
+/out/
+[Cc]MakeFiles/
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+
+# Ninja / MSBuild
+*.obj
+*.o
+*.lo
+*.sbr
+*.sdf
+*.opensdf
+*.tlog
+*.idb
+*.pdb
+*.ilk
+*.log
+*.lastbuildstate
+*.VC.db
+*.VC.opendb
+ipch/
+*.cache
+*.bak
+
+# Qt generated
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# Packages
+*.7z
+*.zip
+
+# OS junk
+.DS_Store
+Thumbs.db
+/CMakeUserPresets.json
