@@ -1,18 +1,47 @@
-#include "pch.h"
-#include <QGuiApplication>
+﻿#include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QQuickWindow>
+#include "Telemetry.h"
+#ifdef _WIN32
+#include "WinClickThrough.h"
+#endif
 
 int main(int argc, char* argv[]) {
+
+    QQuickWindow::setDefaultAlphaBuffer(true);
+
+    //    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+
+    QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
+    fmt.setAlphaBufferSize(8);                  // ← important
+    QSurfaceFormat::setDefaultFormat(fmt);
+
     QGuiApplication app(argc, argv);
+
     QQmlApplicationEngine engine;
+    Telemetry telemetry;
+    engine.rootContext()->setContextProperty("telemetry", &telemetry);
 
-    const QUrl url(u"qrc:/qml/main.qml"_qs);
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &app,
-        [url](QObject* obj, const QUrl& objUrl) {
-            if (!obj && objUrl == url) QCoreApplication::exit(-1);
-        },
-        Qt::QueuedConnection);
+    // This finds the "Main" file inside the "ApexifyHUD" module automatically
+    engine.loadFromModule("ApexifyHUD", "Main");
 
-    engine.load(url);
+    if (engine.rootObjects().isEmpty()) return -1;
+
+    auto* win = qobject_cast<QQuickWindow*>(engine.rootObjects().first());
+    if (win) {
+        win->setFlags(win->flags()
+            | Qt::FramelessWindowHint
+            | Qt::WindowStaysOnTopHint);
+        win->setColor(Qt::transparent);
+//#ifdef ENABLE_CLICK_THROUGH   // optional
+//#ifdef _WIN32
+//        Win::setClickThrough(win, true);
+//#endif
+//#endif
+        win->show();
+    }
+
+    telemetry.start();            // mock timer now; iRacing later
     return app.exec();
 }
