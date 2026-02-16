@@ -1,4 +1,4 @@
-﻿#include <QGuiApplication>
+﻿#include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickWindow>
@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
     fmt.setAlphaBufferSize(8);                  // ← important
     QSurfaceFormat::setDefaultFormat(fmt);
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
     Telemetry telemetry;

@@ -11,6 +11,8 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Quick)
+# 1. Add 'Charts' to find_package
+find_package(Qt6 REQUIRED COMPONENTS Quick Charts Widgets)
 
 # This command grabs all .cpp files in src/ and saves them to a variable
 file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
@@ -30,7 +32,6 @@ qt_add_executable(${APP_TARGET} WIN32
     ${SOURCE_FILES} 
     ${HEADER_FILES}
     ${IRSDK_SOURCES}   # <-- Add the SDK sources here
-    res/apexify_hud.qrc      # AUTORCC will compile the resources
 )
 
 qt_add_qml_module(${APP_TARGET}
@@ -48,7 +49,11 @@ target_include_directories(${APP_TARGET} PRIVATE "irsdk 1.18/irsdk")
 # if you added PCH earlier:
 target_precompile_headers(${APP_TARGET} PRIVATE src/pch.h)
 
-target_link_libraries(${APP_TARGET} PRIVATE Qt${QT_VERSION_MAJOR}::Quick)
+target_link_libraries(${APP_TARGET} PRIVATE
+    Qt${QT_VERSION_MAJOR}::Quick
+    Qt${QT_VERSION_MAJOR}::Charts
+    Qt${QT_VERSION_MAJOR}::Widgets
+)
 
 # (optional) control the .exe name shown on disk:
 set_target_properties(${APP_TARGET} PROPERTIES OUTPUT_NAME "ApexifyHUD")
