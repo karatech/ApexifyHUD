@@ -39,6 +39,7 @@ qt_add_qml_module(${APP_TARGET}
     VERSION 1.0
     QML_FILES
         qml/Main.qml
+        qml/TelemetryChart.qml
 )
 
 
