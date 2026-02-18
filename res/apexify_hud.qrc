@@ -1,6 +1,0 @@
-﻿<RCC>
-	<qresource prefix="/">
-		<!-- Source path goes up one level; alias sets the resource path -->
-		<file alias="qml/main.qml">../qml/main.qml</file>
-	</qresource>
-</RCC>

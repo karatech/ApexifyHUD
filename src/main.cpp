@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickWindow>
-#include "Telemetry.h"
+#include "TelemetryChartData.h"
 #ifdef _WIN32
 #include "WinClickThrough.h"
 #endif
@@ -20,8 +20,8 @@ int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
-    Telemetry telemetry;
-    engine.rootContext()->setContextProperty("telemetry", &telemetry);
+    TelemetryChartData telemetryChartData;
+    engine.rootContext()->setContextProperty("telemetryChartData", &telemetryChartData);
 
     // This finds the "Main" file inside the "ApexifyHUD" module automatically
     engine.loadFromModule("ApexifyHUD", "Main");
@@ -42,6 +42,6 @@ int main(int argc, char* argv[]) {
         win->show();
     }
 
-    telemetry.start();            // mock timer now; iRacing later
+    telemetryChartData.start();
     return app.exec();
 }
