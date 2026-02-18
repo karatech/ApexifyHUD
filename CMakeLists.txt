@@ -23,8 +23,10 @@ set(IRSDK_SOURCES
     "irsdk 1.18/irsdk/yaml_parser.cpp")
 
 qt_add_executable(${APP_TARGET} WIN32
-    MANUAL_FINALIZATION 
-    ${SOURCE_FILES} ${HEADER_FILES} ${IRSDK_SOURCES})
+    MANUAL_FINALIZATION
+    ${SOURCE_FILES} ${HEADER_FILES} ${IRSDK_SOURCES}
+    resources/resources.qrc
+)
 
 qt_add_qml_module(${APP_TARGET} URI ${APP_TARGET} VERSION 1.0
     QML_FILES
