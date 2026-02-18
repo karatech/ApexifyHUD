@@ -1,13 +1,12 @@
 import QtQuick 2.15
 import QtCharts
 
-ChartView { id: telemetryChart; anchors { fill: parent; margins: -11 }
+ChartView { id: telemetryChart; anchors { fill: parent; margins: 0 }
     antialiasing: true;  legend.visible: false
-    backgroundColor: "gray"; 
-    theme: ChartView.ChartThemeDark;
-    dropShadowEnabled: false; clip: true
 
-    margins.top: 25; margins.bottom: 25; margins.left: 25; margins.right: 25
+    theme: ChartView.ChartThemeDark; clip: true
+
+    margins {left: 30; right: 10; top: 10; bottom: 10;}
 
     property int currentThrottle: telemetryChartData ? telemetryChartData.throttle : 0
     property int currentBrake: telemetryChartData ? telemetryChartData.brake : 0
@@ -53,7 +52,6 @@ ChartView { id: telemetryChart; anchors { fill: parent; margins: -11 }
         anchors.bottom: parent.bottom; anchors.bottomMargin: 10; anchors.left: parent.left; anchors.leftMargin: 15;
     }
 
-    // --- MOCK DATA GENERATOR (Remove this when connecting to C++) ---
     Timer {
         interval: 50
         running: true; repeat: true; property int xPos1: 0; property int xPos2: 0
