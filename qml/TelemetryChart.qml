@@ -12,7 +12,7 @@ ChartView { id: telemetryChart; anchors { fill: parent; margins: 0 }
     property int currentBrake: telemetryChartData ? telemetryChartData.brake : 0
 
     // Define the X Axis (Time)
-    ValueAxis { id: axisX; min: 0; max: 70
+    ValueAxis { id: axisX; min: 0; max: 150
         gridVisible: false; labelsVisible: false; shadesVisible:false; visible:false
     }
 

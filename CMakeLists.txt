@@ -43,3 +43,19 @@ target_link_libraries(${APP_TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::Quick Qt${QT_VERSION_MAJOR}::Charts Qt${QT_VERSION_MAJOR}::Widgets)
 
 set_target_properties(${APP_TARGET} PROPERTIES OUTPUT_NAME ${APP_TARGET})
+
+# --- Auto-deploy Qt runtime on build (Windows) ---
+if(WIN32)
+    get_target_property(_qt_qmake_exe Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qt_qmake_exe}" DIRECTORY)
+    set(_windeployqt "${_qt_bin_dir}/windeployqt.exe")
+
+    add_custom_command(TARGET ${APP_TARGET} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E echo "Running windeployqt..."
+        COMMAND "${_windeployqt}"
+                --no-translations
+                --qmldir "${CMAKE_SOURCE_DIR}/qml"
+                "$<TARGET_FILE:${APP_TARGET}>"
+        VERBATIM
+    )
+endif()

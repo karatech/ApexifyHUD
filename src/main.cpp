@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     engine.rootContext()->setContextProperty("telemetryChartData", &telemetryChartData);
     engine.loadFromModule("ApexifyHUD", "Main");
 
-    if (engine.rootObjects().isEmpty()) return -1; 
+    if (engine.rootObjects().isEmpty()) return -1;
 
     telemetryChartData.start();
     return app.exec();
