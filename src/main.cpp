@@ -9,7 +9,10 @@ int main(int argc, char* argv[]) {
 
     QApplication app(argc, argv);
 
-    app.setWindowIcon(QIcon(":/ico.png")); 
+    QCoreApplication::setOrganizationName("Apexify");
+    QCoreApplication::setApplicationName("ApexifyHUD");
+
+    app.setWindowIcon(QIcon(":/ico.png"));
 
     QQmlApplicationEngine engine;
     TelemetryChartData telemetryChartData;
