@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
     QQmlApplicationEngine engine;
     TelemetryChartData telemetryChartData;
     engine.rootContext()->setContextProperty("telemetryChartData", &telemetryChartData);
-    engine.loadFromModule("ApexifyHUD", "Main");
+    engine.loadFromModule("ApexifyHUD", "TelemetryWindow");
 
     if (engine.rootObjects().isEmpty()) return -1;
 

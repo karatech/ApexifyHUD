@@ -30,7 +30,7 @@ qt_add_executable(${APP_TARGET} WIN32
 
 qt_add_qml_module(${APP_TARGET} URI ${APP_TARGET} VERSION 1.0
     QML_FILES
-        qml/Main.qml
+        qml/TelemetryWindow.qml
         qml/TelemetryChart.qml)
 
 target_include_directories(${APP_TARGET} PRIVATE header)
