@@ -6,7 +6,7 @@ TelemetryChartData::TelemetryChartData(QObject* parent)
     : QObject(parent)
 {
     connect(&m_timer, &QTimer::timeout, this, &TelemetryChartData::tick);
-    m_timer.setInterval(16); // ~60 Hz
+    m_timer.setInterval(5); // use 16 for ~60 Hz
     m_timer.setTimerType(Qt::CoarseTimer);
 }
 
@@ -37,6 +37,30 @@ void TelemetryChartData::tick()
         m_varIdxThrottle = -1;
         m_varIdxBrake = -1;
     }
+
+  //  if (m_randomValue == 50)
+  //  {
+  //      m_randomValue--;
+  //      m_upTrend = false;
+  //  }
+  //  if (m_randomValue == 0)
+  //  {
+  //      m_randomValue++;
+  //      m_upTrend = true;
+  //  }
+  //  if (m_upTrend)
+  //  {
+  //      m_randomValue++;
+
+  //  }
+  //  else
+  //  {
+		//m_randomValue--;
+  //  }
+  //  m_throttle = m_randomValue + 50;
+  //  emit throttleChanged();
+  //  m_brake = m_randomValue;
+  //  emit brakeChanged();
 
     if (!hasNew || !c.isConnected())
         return;

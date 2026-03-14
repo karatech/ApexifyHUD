@@ -38,4 +38,7 @@ private:
     int m_varIdxBrake = -1;
     int m_lastStatusId = -1;
 
+	int m_randomValue = 0;
+    bool m_upTrend = true;
+
 };

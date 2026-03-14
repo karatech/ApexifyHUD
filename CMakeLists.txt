@@ -20,7 +20,8 @@ file(GLOB_RECURSE HEADER_FILES "header/*.h")
 set(IRSDK_SOURCES
     "irsdk 1.18/irsdk/irsdk_client.cpp"
     "irsdk 1.18/irsdk/irsdk_utils.cpp"
-    "irsdk 1.18/irsdk/yaml_parser.cpp")
+    "irsdk 1.18/irsdk/yaml_parser.cpp"
+    "irsdk 1.18/irsdk/irsdk_diskclient.cpp")
 
 qt_add_executable(${APP_TARGET} WIN32
     MANUAL_FINALIZATION
