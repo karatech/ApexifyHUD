@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
     // Request 4x MSAA for smooth Scene Graph lines
     QSurfaceFormat format;
     format.setSamples(4);
-    QSurfaceFormat::setDefaultFormat(format);
+    QSurfaceFormat::setDefaultFormat(format); 
 
     QApplication app(argc, argv);
 

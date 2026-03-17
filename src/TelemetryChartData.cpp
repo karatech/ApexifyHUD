@@ -6,7 +6,7 @@ TelemetryChartData::TelemetryChartData(QObject* parent)
     : QObject(parent)
 {
     connect(&m_timer, &QTimer::timeout, this, &TelemetryChartData::tick);
-    m_timer.setInterval(5); // use 16 for ~60 Hz
+    m_timer.setInterval(16); // use 16 for ~60 Hz
     m_timer.setTimerType(Qt::CoarseTimer);
 }
 
@@ -72,17 +72,17 @@ void TelemetryChartData::tick()
 
     if (m_varIdxThrottle >= 0) {
         const int value = toPercent(c.getVarFloat(m_varIdxThrottle));
-        if (value != m_throttle) {
+//        if (value != m_throttle) {
             m_throttle = value;
             emit throttleChanged();
-        }
+//        }
     }
 
     if (m_varIdxBrake >= 0) {
         const int value = toPercent(c.getVarFloat(m_varIdxBrake));
-        if (value != m_brake) {
+//        if (value != m_brake) {
             m_brake = value;
             emit brakeChanged();
-        }
+//        }
     }
 }
