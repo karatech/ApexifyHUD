@@ -5,8 +5,9 @@
 #include <QIcon>
 #include <QSurfaceFormat>
 #include "TelemetryChartData.h"
-#include "FastTelemetryChart.h" // ADD THIS
+#include "FastTelemetryChart.h"
 #include "IbtSimulator.h"
+#include "MainWindowBackend.h"
 
 int main(int argc, char* argv[]) {
 
@@ -31,9 +32,14 @@ int main(int argc, char* argv[]) {
     qmlRegisterType<FastTelemetryChart>("App", 1, 0, "FastTelemetryChart");
 
     QQmlApplicationEngine engine;
+
     TelemetryChartData telemetryChartData;
+    MainWindowBackend mainWindowBackend;
+
     engine.rootContext()->setContextProperty("telemetryChartData", &telemetryChartData);
-    engine.loadFromModule("ApexifyHUD", "TelemetryWindow");
+    engine.rootContext()->setContextProperty("mainWindowBackend", &mainWindowBackend);
+
+    engine.loadFromModule("ApexifyHUD", "MainWindow");
 
     if (engine.rootObjects().isEmpty()) return -1;
 

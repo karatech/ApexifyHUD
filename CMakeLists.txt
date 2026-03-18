@@ -29,6 +29,7 @@ qt_add_resources(${APP_TARGET} "app_resources"
 
 qt_add_qml_module(${APP_TARGET} URI ${APP_TARGET} VERSION 1.0
     QML_FILES
+        qml/MainWindow.qml
         qml/TelemetryWindow.qml
         qml/TelemetryChart.qml)
 

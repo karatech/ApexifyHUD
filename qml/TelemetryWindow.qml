@@ -5,7 +5,7 @@ import QtCharts
 import Qt.labs.settings 1.1
 
 Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; minimumHeight: 80
-    visible: true;flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+    flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     color: "transparent"
 
     function clampOpacity(v) { return Math.min(1.0, Math.max(0.4, v)); }
@@ -21,7 +21,7 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
 
         onPressed: (mouse) => {
             if (mouse.button === Qt.MiddleButton) {
-                Qt.quit()
+                root.visible = false // Middle Click to Hide
                 return
             }
             if (mouse.button === Qt.LeftButton) {
