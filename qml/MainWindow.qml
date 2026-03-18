@@ -1,22 +1,17 @@
-﻿
-
-import QtQuick.Controls.Material 2.15
+﻿import QtQuick.Controls.Material 2.15
 import Qt.labs.settings 1.0
 import Qt.labs.folderlistmodel 2.15
 import QtQuick 6.9
 import QtQuick.Controls 6.9 as Controls
-
 import QtQuick.Layouts
 import QtQuick.Dialogs
 
-ApplicationWindow {
-    id: mainWindow
-    width: 640; height: 800
-    visible: true
-    title: "ApexifyHUD"
+ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
+    width: 640; height: 800; visible: true
     Material.theme: Material.Dark; Material.accent: Material.DeepOrange; Material.primary: Material.Grey
 
     property string selectedIbtFileName: ""
+    property string selectedIbtFilePath: ""
 
     component CustomCheckBox : Controls.CheckBox {
         id: control
@@ -36,125 +31,118 @@ ApplicationWindow {
 
     component CustomRadioButton : Controls.RadioButton {
         id: control
-        opacity: 1
-        padding: 0
-        spacing: 8
+        opacity: 1; padding: 0; spacing: 8
 
         indicator: Rectangle {
             opacity: control.enabled ? 1.0 : 0.38
-            x: 0
-            y: (control.height - height) / 2 + 1
-            implicitWidth: 13
-            implicitHeight: 13
+            x: 0; y: (control.height - height) / 2 + 1
+            implicitWidth: 13; implicitHeight: 13
             radius: width / 2
             border.width: 1
             border.color: control.checked ? "#7F3B2E" : "#b0b0b0"
             color: control.checked ? "#7F3B2E" : "transparent"
 
             Rectangle {
-                anchors.centerIn: parent
-                width: 5; height: 5
-                radius: width / 2
-                visible: control.checked
+                anchors.centerIn: parent; width: 5; height: 5
+                radius: width / 2; visible: control.checked
                 color: "white"
             }
         }
 
         contentItem: Text {
-            text: control.text
-            color: "white"
-            font: control.font
-            verticalAlignment: Text.AlignVCenter
-            leftPadding: control.indicator.width + control.spacing
-            elide: Text.ElideRight
+            text: control.text; color: "white"; font: control.font; verticalAlignment: Text.AlignVCenter
+            leftPadding: control.indicator.width + control.spacing; elide: Text.ElideRight
         }
     }
 
-    FolderListModel {
-        id: ibtFilesModel
+    FolderListModel { id: ibtFilesModel
         folder: ibtLogFolderUrl
-        nameFilters: ["*.ibt"]   // remove this line if you want all files
-        showDirs: false
-        showDotAndDotDot: false
-        sortField: FolderListModel.Name
+        nameFilters: ["*.ibt"]
+        showDirs: false; showDotAndDotDot: false; sortField: FolderListModel.Name
     }
 
-    Controls.ButtonGroup {
-        id: ibtButtonGroup
-    }
+    Controls.ButtonGroup { id: ibtButtonGroup }
 
-    Column {
-        anchors.fill: parent; anchors.margins: 16; spacing: 12
-        CustomCheckBox { id: telemetryGraphCheck; text: "Telemetry Graph"; enabled: true
+    ColumnLayout { anchors.fill: parent; anchors.margins: 16; spacing: 12
+
+        CustomCheckBox { id: telemetryGraphCheck
+            text: "Telemetry Graph"; enabled: true; Layout.fillWidth: true
             onCheckedChanged: {
                 telemetryWinLoader.active = checked
                 if (checked && telemetryWinLoader.item) telemetryWinLoader.item.visible = true
             }
         }
-        CustomCheckBox { id: liveRadar; text: "Live Radar"; enabled: false
+
+        CustomCheckBox { id: liveRadar
+            text: "Live Radar"; enabled: false; Layout.fillWidth: true
             onCheckedChanged: {
                 if (liveRadar.checked !== visible) liveRadar.checked = visible
             }
         }
-        CustomCheckBox { id: map; text: "Map"; enabled: false
+
+        CustomCheckBox { id: map
+            text: "Map"; enabled: false; Layout.fillWidth: true
             onCheckedChanged: {
                 if (map.checked !== visible) map.checked = visible
             }
         }
 
+        Item { Layout.fillHeight: true }
+
         Controls.Label {
-            text: "IBT log files"
-            color: "white"
-            font.bold: true
+            text: "IBT log files"; color: "white"; font.bold: true; Layout.fillWidth: true
         }
 
         Rectangle {
-            width: parent.width
-            height: 240
-            radius: 4
-            color: "transparent"
-            border.color: "transparent"
+            Layout.fillWidth: true; height: 240; radius: 4; color: "transparent"; border.color: "transparent"
 
-            ListView {
-                id: ibtListView
-                anchors.fill: parent
-                anchors.margins: 8
-                clip: true
-                model: ibtFilesModel
+            ListView { id: ibtListView
+                anchors.fill: parent; anchors.margins: 8; clip: true; model: ibtFilesModel
 
                 delegate: CustomRadioButton {
                     required property string fileName
-
+                    required property string filePath
                     ButtonGroup.group: ibtButtonGroup
                     text: fileName
                     checked: mainWindow.selectedIbtFileName === fileName
                     width: ibtListView.width
                     onToggled: {
-                        if (checked) mainWindow.selectedIbtFileName = fileName
+                        if (checked) {
+                            mainWindow.selectedIbtFileName = fileName
+                            mainWindow.selectedIbtFilePath = filePath   // full path saved
+                        }
                     }
                 }
             }
         }
 
-        Controls.Label {
-            visible: mainWindow.selectedIbtFileName.length > 0
-            text: "Selected: " + mainWindow.selectedIbtFileName
-            color: "#BBBBBB"
-            wrapMode: Text.WrapAnywhere
+
+        RowLayout {
+            width: parent.width; spacing: 8
+
+            Controls.Label {
+                visible: true; color: "#BBBBBB"
+                text: "Selected: " + mainWindow.selectedIbtFileName
+                wrapMode: Text.WrapAnywhere; Layout.fillWidth: true
+            }
+
+            Controls.Button { id: simulateButton; text: "Simulate";
+                enabled: mainWindow.selectedIbtFileName.length > 0
+                onClicked: {
+                    mainWindowBackend.simulateSelectedIbt(mainWindow.selectedIbtFilePath)
+                }
+                background: Rectangle { color: simulateButton.down ? "dark red" : "#7F3B2E"; radius: 15; border.color: "black" }
+            }
         }
 
         Controls.Label {
             visible: ibtFilesModel.count === 0
             text: "No .ibt files found in: " + ibtLogFolderUrl
-            color: "#BBBBBB"
-            wrapMode: Text.WrapAnywhere
+            color: "#BBBBBB"; wrapMode: Text.WrapAnywhere; Layout.fillWidth: true
         }
     }
 
-
-
-    Loader {
-        id: telemetryWinLoader
+    Loader { id: telemetryWinLoader
         active: telemetryGraphCheck.checked
         source: "TelemetryWindow.qml"
 

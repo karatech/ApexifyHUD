@@ -11,11 +11,6 @@
 #include "MainWindowBackend.h"
 
 int main(int argc, char* argv[]) {
-
-    IbtSimulator sim;
-    sim.setLoop(true);
-    sim.open("ibt log files/test_iRacing_SDK.ibt");  // starts the background thread
-
     // Request 4x MSAA for smooth Scene Graph lines
     QSurfaceFormat format;
     format.setSamples(4);
@@ -48,8 +43,6 @@ int main(int argc, char* argv[]) {
     telemetryChartData.start();
 
     auto ret = app.exec();
-
-    sim.close();  // stop and clean up
 
     return ret;
 }
