@@ -16,69 +16,38 @@ ApplicationWindow {
     title: "ApexifyHUD"
     Material.theme: Material.Dark; Material.accent: Material.DeepOrange; Material.primary: Material.Grey
 
+    component CustomCheckBox : Controls.CheckBox {
+        id: control
+        opacity: 1; padding: 0
+        indicator: Rectangle { opacity: control.enabled ? 1.0 : 0.38
+            x: 0; y: (control.height - height) / 2 + 1
+            implicitWidth: 13; implicitHeight: 13
+            radius: 2; border.width: 1
+            border.color: control.checked ? "#7F3B2E" : "#b0b0b0"
+            color: control.checked ? "#7F3B2E" : "transparent"
+            Text { anchors.centerIn: parent
+                text: "✓"; visible: control.checked
+                font.pixelSize: 9; color: "white"
+            }
+        }
+    }
+
     Column {
         anchors.fill: parent; anchors.margins: 16; spacing: 12
-        Controls.CheckBox { id: telemetryGraphCheck
-            text: "Telemetry Graph"
-            opacity: 1
-            enabled: true
-            padding: 0
+        CustomCheckBox { id: telemetryGraphCheck; text: "Telemetry Graph"; enabled: true
             onCheckedChanged: {
-                if (telemetryWin.visible !== checked) {
-                    telemetryWin.visible = checked
-                }
-            }
-            indicator: Rectangle {
-                opacity: telemetryGraphCheck.enabled ? 1.0 : 0.38
-                x: 0
-                y: (parent.height - height) / 2 + 1
-                implicitWidth: 13; implicitHeight: 13
-                radius: 2; border.width: 1
-                border.color: telemetryGraphCheck.checked ? "#7F3B2E" : "#b0b0b0"
-                color: telemetryGraphCheck.checked ? "#7F3B2E" : "transparent"
-                Text { anchors.centerIn: parent
-                    text: "✓"; visible: telemetryGraphCheck.checked
-                    font.pixelSize: 9; color: "white"
-                }
+                if (telemetryWin.visible !== checked) telemetryWin.visible = checked
             }
         }
-        Controls.CheckBox { id: liveRadar
-            text: "Live Radar"
-            opacity: 1
-            enabled: false
-            padding: 0
-            indicator: Rectangle {
-                opacity: liveRadar.enabled ? 1.0 : 0.38
-                x: 0
-                y: (parent.height - height) / 2 + 1
-                implicitWidth: 13; implicitHeight: 13
-                radius: 2; border.width: 1
-                border.color: liveRadar.checked ? "#7F3B2E" : "#b0b0b0"
-                color: liveRadar.checked ? "#7F3B2E" : "transparent"
-                Text { anchors.centerIn: parent
-                    text: "✓"; visible: liveRadar.checked
-                    font.pixelSize: 9; color: "white"
-                }
+        CustomCheckBox { id: liveRadar; text: "Live Radar"; enabled: false
+            onCheckedChanged: {
+                if (liveRadar.checked !== visible) liveRadar.checked = visible
             }
         }
-        Controls.CheckBox { id: map
-            text: "Map"
-            opacity: 1
 
-            enabled: false
-            padding: 0
-            indicator: Rectangle {
-                opacity: map.enabled ? 1.0 : 0.38
-                x: 0
-                y: (parent.height - height) / 2 + 1
-                implicitWidth: 13; implicitHeight: 13
-                radius: 2; border.width: 1
-                border.color: map.checked ? "#7F3B2E" : "#b0b0b0"
-                color: map.checked ? "#7F3B2E" : "transparent"
-                Text { anchors.centerIn: parent
-                    text: "✓"; visible: map.checked
-                    font.pixelSize: 9; color: "white"
-                }
+        CustomCheckBox { id: map; text: "Map"; enabled: false
+            onCheckedChanged: {
+                if (map.checked !== visible) map.checked = visible
             }
         }
     }
@@ -86,9 +55,7 @@ ApplicationWindow {
     TelemetryWindow {
         id: telemetryWin
         onVisibleChanged: {
-            if (telemetryGraphCheck.checked !== visible) {
-                telemetryGraphCheck.checked = visible
-            }
+            if (telemetryGraphCheck.checked !== visible) telemetryGraphCheck.checked = visible
         }
     }
 
