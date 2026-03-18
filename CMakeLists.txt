@@ -9,11 +9,9 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick Charts Widgets)
 
-# Include .cpp and .h files from the Views and Model folders as well
-file(GLOB_RECURSE SOURCE_FILES "src/*.cpp" "Views/*.cpp" "Model/*.cpp" "ViewModels/*.cpp")
-file(GLOB_RECURSE HEADER_FILES "Views/*.h" "Model/*.h" "ViewModels/*.h")
-
+file(GLOB_RECURSE SOURCE_FILES "Views/*.cpp" "Model/*.cpp" "ViewModels/*.cpp")
 list(APPEND SOURCE_FILES "main.cpp")
+file(GLOB_RECURSE HEADER_FILES "Views/*.h" "Model/*.h" "ViewModels/*.h")
 list(APPEND HEADER_FILES "pch.h")
 
 set(IRSDK_SOURCES
