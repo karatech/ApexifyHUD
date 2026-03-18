@@ -53,4 +53,15 @@ if(WIN32)
                 "$<TARGET_FILE:${APP_TARGET}>"
         VERBATIM
     )
+
+    # Copy repo folder: "ibt log files" -> build output folder
+    set(_ibt_src "${CMAKE_SOURCE_DIR}/ibt log files")
+    set(_ibt_dst "$<TARGET_FILE_DIR:${APP_TARGET}>/ibt log files")
+
+    add_custom_command(TARGET ${APP_TARGET} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E echo "Copying ibt log files..."
+        COMMAND "${CMAKE_COMMAND}" -E remove_directory "${_ibt_dst}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${_ibt_src}" "${_ibt_dst}"
+        VERBATIM
+    )
 endif()

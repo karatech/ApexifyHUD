@@ -4,6 +4,7 @@
 #include <QQuickWindow>
 #include <QIcon>
 #include <QSurfaceFormat>
+#include <QUrl>
 #include "TelemetryChartData.h"
 #include "FastTelemetryChart.h"
 #include "IbtSimulator.h"
@@ -13,13 +14,12 @@ int main(int argc, char* argv[]) {
 
     IbtSimulator sim;
     sim.setLoop(true);
-    sim.open("C:/Users/danielc/Desktop/test_iRacing_SDK.ibt");  // starts the background thread
-
+    sim.open("ibt log files/test_iRacing_SDK.ibt");  // starts the background thread
 
     // Request 4x MSAA for smooth Scene Graph lines
     QSurfaceFormat format;
     format.setSamples(4);
-    QSurfaceFormat::setDefaultFormat(format); 
+    QSurfaceFormat::setDefaultFormat(format);
 
     QApplication app(argc, argv);
 
@@ -28,7 +28,6 @@ int main(int argc, char* argv[]) {
 
     app.setWindowIcon(QIcon(":/ico.png"));
 
-    // ADD THIS LINE
     qmlRegisterType<FastTelemetryChart>("App", 1, 0, "FastTelemetryChart");
 
     QQmlApplicationEngine engine;
@@ -36,8 +35,11 @@ int main(int argc, char* argv[]) {
     TelemetryChartData telemetryChartData;
     MainWindowBackend mainWindowBackend;
 
+    const QUrl ibtLogFolderUrl = QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/ibt log files");
+
     engine.rootContext()->setContextProperty("telemetryChartData", &telemetryChartData);
     engine.rootContext()->setContextProperty("mainWindowBackend", &mainWindowBackend);
+    engine.rootContext()->setContextProperty("ibtLogFolderUrl", ibtLogFolderUrl);
 
     engine.loadFromModule("ApexifyHUD", "MainWindow");
 
@@ -45,7 +47,7 @@ int main(int argc, char* argv[]) {
 
     telemetryChartData.start();
 
-	auto ret = app.exec();
+    auto ret = app.exec();
 
     sim.close();  // stop and clean up
 
