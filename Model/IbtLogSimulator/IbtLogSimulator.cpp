@@ -1,6 +1,6 @@
 #pragma warning(disable: 4996)  // fopen / strncpy
 
-#include "IbtSimulator.h"
+#include "IbtLogSimulator.h"
 
 #include <intrin.h>
 #pragma intrinsic(_WriteBarrier)
@@ -10,16 +10,16 @@
 #include <cstring>
 #include <thread>
 
-// ---------------------------------------------------------------------------
-IbtSimulator::IbtSimulator() = default;
+using namespace ApexifyHUD::Model::IbtLogSimulator;
 
-IbtSimulator::~IbtSimulator()
+IbtLogSimulator::IbtLogSimulator() = default;
+
+IbtLogSimulator::~IbtLogSimulator()
 {
     close();
 }
 
-// ---------------------------------------------------------------------------
-bool IbtSimulator::open(const std::string& path)
+bool IbtLogSimulator::open(const std::string& path)
 {
     close();
 
@@ -35,11 +35,11 @@ bool IbtSimulator::open(const std::string& path)
     }
 
     m_running.store(true);
-    m_thread = std::thread(&IbtSimulator::simulatorThread, this);
+    m_thread = std::thread(&IbtLogSimulator::simulatorThread, this);
     return true;
 }
 
-void IbtSimulator::close()
+void IbtLogSimulator::close()
 {
     m_running.store(false);
     if (m_thread.joinable())
@@ -49,18 +49,15 @@ void IbtSimulator::close()
     m_reader.closeFile();
 }
 
-// ---------------------------------------------------------------------------
-bool IbtSimulator::setupSharedMemory()
+bool IbtLogSimulator::setupSharedMemory()
 {
     const irsdk_header& ibtHdr = m_reader.fileHeader();
 
     if (ibtHdr.numVars <= 0 || ibtHdr.bufLen <= 0 || ibtHdr.sessionInfoLen <= 0)
         return false;
 
-    // ------------------------------------------------------------------
     // Compute the shared memory layout.
     // Layout: [irsdk_header][session_string][var_headers][buf0][buf1][buf2]
-    // ------------------------------------------------------------------
     int offset = 0;
 
     // 1. Main header
@@ -84,10 +81,8 @@ bool IbtSimulator::setupSharedMemory()
 
     m_sharedMemSize = offset;
 
-    // ------------------------------------------------------------------
     // Create named shared memory (exactly what irsdkClient's irsdk_startup
     // opens with OpenFileMapping / IRSDK_MEMMAPFILENAME).
-    // ------------------------------------------------------------------
     m_hMemMapFile = CreateFileMapping(
         INVALID_HANDLE_VALUE, nullptr,
         PAGE_READWRITE, 0, m_sharedMemSize,
@@ -108,9 +103,7 @@ bool IbtSimulator::setupSharedMemory()
 
     memset(m_pSharedMem, 0, m_sharedMemSize);
 
-    // ------------------------------------------------------------------
     // Build the irsdk_header in the shared memory block.
-    // ------------------------------------------------------------------
     irsdk_header liveHdr{};
     liveHdr.ver               = IRSDK_VER;
     liveHdr.status            = 0;                    // set to stConnected below
@@ -132,9 +125,7 @@ bool IbtSimulator::setupSharedMemory()
     m_pHeader = reinterpret_cast<irsdk_header*>(m_pSharedMem);
     memcpy(m_pHeader, &liveHdr, sizeof(irsdk_header));
 
-    // ------------------------------------------------------------------
     // Copy session info string.
-    // ------------------------------------------------------------------
     const char* sessionStr = m_reader.getSessionStr();
     if (sessionStr)
     {
@@ -143,9 +134,7 @@ bool IbtSimulator::setupSharedMemory()
         dest[ibtHdr.sessionInfoLen - 1] = '\0';
     }
 
-    // ------------------------------------------------------------------
     // Copy variable headers.
-    // ------------------------------------------------------------------
     const irsdk_varHeader* varHeaders = m_reader.varHeaders();
     if (varHeaders)
     {
@@ -156,11 +145,9 @@ bool IbtSimulator::setupSharedMemory()
 
     _WriteBarrier();
 
-    // ------------------------------------------------------------------
     // Create named data-valid event (exactly what irsdkClient opens with
     // OpenEvent / IRSDK_DATAVALIDEVENTNAME).
     // Manual-reset event so all waiting clients are woken on each pulse.
-    // ------------------------------------------------------------------
     m_hDataValidEvent = CreateEvent(nullptr, TRUE, FALSE, IRSDK_DATAVALIDEVENTNAME);
     if (!m_hDataValidEvent)
     {
@@ -176,7 +163,7 @@ bool IbtSimulator::setupSharedMemory()
     return true;
 }
 
-void IbtSimulator::teardownSharedMemory()
+void IbtLogSimulator::teardownSharedMemory()
 {
     // Signal clients we are going away.
     if (m_pHeader)
@@ -207,8 +194,7 @@ void IbtSimulator::teardownSharedMemory()
     m_pHeader = nullptr;
 }
 
-// ---------------------------------------------------------------------------
-void IbtSimulator::simulatorThread()
+void IbtLogSimulator::simulatorThread()
 {
     using namespace std::chrono;
 

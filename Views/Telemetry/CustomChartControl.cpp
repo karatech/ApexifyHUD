@@ -1,15 +1,17 @@
-#include "FastTelemetryChart.h"
+#include "CustomChartControl.h"
 #include <QPainter>
 #include <QPen>
 #include <QPointF>
 
-FastTelemetryChart::FastTelemetryChart(QQuickItem *parent) : QQuickPaintedItem(parent) {
+using namespace ApexifyHUD::Views::Telemetry;
+
+CustomChartControl::CustomChartControl(QQuickItem *parent) : QQuickPaintedItem(parent) {
     // Enable antialiasing out of the box for QPainter lines
     setAntialiasing(true); 
     setRenderTarget(QQuickPaintedItem::FramebufferObject); // Best performance mode
 }
 
-void FastTelemetryChart::setThrottleColor(const QColor &color) {
+void CustomChartControl::setThrottleColor(const QColor &color) {
     if (m_throttleColor != color) {
         m_throttleColor = color;
         emit throttleColorChanged();
@@ -17,7 +19,7 @@ void FastTelemetryChart::setThrottleColor(const QColor &color) {
     }
 }
 
-void FastTelemetryChart::setBrakeColor(const QColor &color) {
+void CustomChartControl::setBrakeColor(const QColor &color) {
     if (m_brakeColor != color) {
         m_brakeColor = color;
         emit brakeColorChanged();
@@ -25,14 +27,14 @@ void FastTelemetryChart::setBrakeColor(const QColor &color) {
     }
 }
 
-void FastTelemetryChart::setMaxPoints(int points) {
+void CustomChartControl::setMaxPoints(int points) {
     if (m_maxPoints != points) {
         m_maxPoints = points;
         emit maxPointsChanged();
     }
 }
 
-void FastTelemetryChart::appendData(float throttle, float brake) {
+void CustomChartControl::appendData(float throttle, float brake) {
     m_throttleData.append(throttle);
     m_brakeData.append(brake);
 
@@ -42,7 +44,7 @@ void FastTelemetryChart::appendData(float throttle, float brake) {
     update(); // Triggers a call to paint()
 }
 
-void FastTelemetryChart::paint(QPainter *painter) {
+void CustomChartControl::paint(QPainter *painter) {
     painter->setRenderHint(QPainter::Antialiasing);
 
     const float w = width();

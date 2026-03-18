@@ -9,14 +9,18 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick Charts Widgets)
 
-file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
-file(GLOB_RECURSE HEADER_FILES "header/*.h")
+# Include .cpp and .h files from the Views and Model folders as well
+file(GLOB_RECURSE SOURCE_FILES "src/*.cpp" "Views/*.cpp" "Model/*.cpp" "ViewModels/*.cpp")
+file(GLOB_RECURSE HEADER_FILES "Views/*.h" "Model/*.h" "ViewModels/*.h")
+
+list(APPEND SOURCE_FILES "main.cpp")
+list(APPEND HEADER_FILES "pch.h")
 
 set(IRSDK_SOURCES
-    "irsdk 1.18/irsdk/irsdk_client.cpp"
-    "irsdk 1.18/irsdk/irsdk_utils.cpp"
-    "irsdk 1.18/irsdk/yaml_parser.cpp"
-    "irsdk 1.18/irsdk/irsdk_diskclient.cpp")
+    "third_party/irsdk 1.18/irsdk/irsdk_client.cpp"
+    "third_party/irsdk 1.18/irsdk/irsdk_utils.cpp"
+    "third_party/irsdk 1.18/irsdk/yaml_parser.cpp"
+    "third_party/irsdk 1.18/irsdk/irsdk_diskclient.cpp")
 
 qt_add_executable(${APP_TARGET} WIN32
     MANUAL_FINALIZATION
@@ -29,13 +33,13 @@ qt_add_resources(${APP_TARGET} "app_resources"
 
 qt_add_qml_module(${APP_TARGET} URI ${APP_TARGET} VERSION 1.0
     QML_FILES
-        qml/MainWindow.qml
-        qml/TelemetryWindow.qml
-        qml/TelemetryChart.qml)
+        Views/MainWindow.qml
+        Views/Telemetry/TelemetryWindow.qml
+        Views/Telemetry/TelemetryChart.qml)
 
-target_include_directories(${APP_TARGET} PRIVATE header "irsdk 1.18/irsdk")
+target_include_directories(${APP_TARGET} PRIVATE header "third_party/irsdk 1.18/irsdk")
 
-target_precompile_headers(${APP_TARGET} PRIVATE src/pch.h)
+target_precompile_headers(${APP_TARGET} PRIVATE pch.h)
 
 target_link_libraries(${APP_TARGET} PRIVATE
     Qt6::Quick Qt6::Charts Qt6::Widgets winmm)
@@ -49,7 +53,7 @@ if(WIN32)
         COMMAND "${CMAKE_COMMAND}" -E echo "Running windeployqt..."
         COMMAND "${_windeployqt}"
                 --no-translations
-                --qmldir "${CMAKE_SOURCE_DIR}/qml"
+                --qmldir "${CMAKE_SOURCE_DIR}/Views"
                 "$<TARGET_FILE:${APP_TARGET}>"
         VERBATIM
     )

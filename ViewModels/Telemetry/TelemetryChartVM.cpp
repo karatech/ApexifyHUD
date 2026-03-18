@@ -1,21 +1,23 @@
-#include "TelemetryChartData.h"
+#include "TelemetryChartVM.h"
 
 #include "irsdk_client.h"
 
-TelemetryChartData::TelemetryChartData(QObject* parent)
+using namespace ApexifyHUD::ViewModels::Telemetry;
+
+TelemetryChartVM::TelemetryChartVM(QObject* parent)
     : QObject(parent)
 {
-    connect(&m_timer, &QTimer::timeout, this, &TelemetryChartData::tick);
+    connect(&m_timer, &QTimer::timeout, this, &TelemetryChartVM::tick);
     m_timer.setInterval(16); // use 16 for ~60 Hz
     m_timer.setTimerType(Qt::CoarseTimer);
 }
 
-void TelemetryChartData::start()
+void TelemetryChartVM::start()
 {
     m_timer.start();
 }
 
-int TelemetryChartData::toPercent(float value01)
+int TelemetryChartVM::toPercent(float value01)
 {
     if (value01 < 0.0f)
         value01 = 0.0f;
@@ -25,7 +27,7 @@ int TelemetryChartData::toPercent(float value01)
     return static_cast<int>(value01 * 100.0f + 0.5f);
 }
 
-void TelemetryChartData::tick()
+void TelemetryChartVM::tick()
 {
     irsdkClient& c = irsdkClient::instance();
 

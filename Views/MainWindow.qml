@@ -129,7 +129,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
             Controls.Button { id: simulateButton; text: "Simulate";
                 enabled: mainWindow.selectedIbtFileName.length > 0
                 onClicked: {
-                    mainWindowBackend.simulateSelectedIbt(mainWindow.selectedIbtFilePath)
+                    mainWindowVM.simulateSelectedIbt(mainWindow.selectedIbtFilePath)
                 }
                 background: Rectangle { color: simulateButton.down ? "dark red" : "#7F3B2E"; radius: 15; border.color: "black" }
             }
@@ -144,7 +144,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
 
     Loader { id: telemetryWinLoader
         active: telemetryGraphCheck.checked
-        source: "TelemetryWindow.qml"
+        source: "Telemetry/TelemetryWindow.qml"
 
         onLoaded: {
             if (item) {

@@ -1,16 +1,18 @@
-#include "MainWindowBackend.h"
+#include "MainWindowVM.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
-#include "IbtSimulator.h"
 
-MainWindowBackend::MainWindowBackend(QObject* parent)
+using namespace ApexifyHUD::ViewModels;
+
+
+MainWindowVM::MainWindowVM(QObject* parent)
     : QObject(parent)
 {
 }
 
-void MainWindowBackend::simulateSelectedIbt(const QString& fileName)
+void MainWindowVM::simulateSelectedIbt(const QString& fileName)
 {
 	if (m_ibtSimulator.isRunning()) 
         m_ibtSimulator.close();
@@ -19,7 +21,7 @@ void MainWindowBackend::simulateSelectedIbt(const QString& fileName)
     m_ibtSimulator.open(fileName.toStdString()); // starts the background thread
 }
 
-MainWindowBackend::~MainWindowBackend() 
+MainWindowVM::~MainWindowVM() 
 {
     if (m_ibtSimulator.isRunning())
         m_ibtSimulator.close();

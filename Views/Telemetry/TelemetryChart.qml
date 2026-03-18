@@ -9,7 +9,7 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
     property int currentThrottle: telemetryChartData ? telemetryChartData.throttle : 0
     property int currentBrake: telemetryChartData ? telemetryChartData.brake : 0
 
-    FastTelemetryChart { id: fastChart; anchors.fill: parent; anchors.margins: 10; anchors.leftMargin: 37
+    CustomChartControl { id: fastChart; anchors.fill: parent; anchors.margins: 10; anchors.leftMargin: 37
         throttleColor: "#00FF00"; brakeColor: "#FF0000"; maxPoints: 500
     }
 

@@ -5,35 +5,39 @@
 #include <QIcon>
 #include <QSurfaceFormat>
 #include <QUrl>
-#include "TelemetryChartData.h"
-#include "FastTelemetryChart.h"
-#include "IbtSimulator.h"
-#include "MainWindowBackend.h"
+#include "ViewModels/Telemetry/TelemetryChartVM.h"
+#include "Views/Telemetry/CustomChartControl.h"
+#include "../Model/IbtLogSimulator/IbtLogSimulator.h"
+#include "ViewModels/MainWindowVM.h"
+
+using namespace ApexifyHUD::ViewModels::Telemetry;
+using namespace ApexifyHUD::ViewModels;
+using namespace ApexifyHUD::Views::Telemetry;
 
 int main(int argc, char* argv[]) {
     // Request 4x MSAA for smooth Scene Graph lines
     QSurfaceFormat format;
     format.setSamples(4);
-    QSurfaceFormat::setDefaultFormat(format);
+    QSurfaceFormat::setDefaultFormat(format); 
 
     QApplication app(argc, argv);
 
-    QCoreApplication::setOrganizationName("Apexify");
+    QCoreApplication::setOrganizationName("Apexify"); 
     QCoreApplication::setApplicationName("ApexifyHUD");
 
     app.setWindowIcon(QIcon(":/ico.png"));
 
-    qmlRegisterType<FastTelemetryChart>("App", 1, 0, "FastTelemetryChart");
+    qmlRegisterType<CustomChartControl>("App", 1, 0, "CustomChartControl");
 
     QQmlApplicationEngine engine;
 
-    TelemetryChartData telemetryChartData;
-    MainWindowBackend mainWindowBackend;
+    TelemetryChartVM telemetryChartData;
+    MainWindowVM mainWindowVM;
 
     const QUrl ibtLogFolderUrl = QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/ibt log files");
 
     engine.rootContext()->setContextProperty("telemetryChartData", &telemetryChartData);
-    engine.rootContext()->setContextProperty("mainWindowBackend", &mainWindowBackend);
+    engine.rootContext()->setContextProperty("mainWindowVM", &mainWindowVM);
     engine.rootContext()->setContextProperty("ibtLogFolderUrl", ibtLogFolderUrl);
 
     engine.loadFromModule("ApexifyHUD", "MainWindow");
