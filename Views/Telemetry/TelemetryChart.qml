@@ -6,8 +6,8 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
     SystemPalette { id: palette; colorGroup: SystemPalette.Dark }
     color: palette.window // Automatically adopts the theme's window background color
     
-    property int currentThrottle: telemetryChartData ? telemetryChartData.throttle : 0
-    property int currentBrake: telemetryChartData ? telemetryChartData.brake : 0
+    property int currentThrottle: telemetryChartVM ? telemetryChartVM.throttle : 0
+    property int currentBrake: telemetryChartVM ? telemetryChartVM.brake : 0
 
     CustomChartControl { id: fastChart; anchors.fill: parent; anchors.margins: 10; anchors.leftMargin: 37
         throttleColor: "#00FF00"; brakeColor: "#FF0000"; maxPoints: 500
@@ -21,11 +21,11 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
     }
 
     Connections {
-        target: telemetryChartData
+        target: telemetryChartVM
         
         function onThrottleChanged() {
             // Only append data when C++ actually has new data
-            fastChart.appendData(telemetryChartData.throttle, telemetryChartData.brake)
+            fastChart.appendData(telemetryChartVM.throttle, telemetryChartVM.brake)
         }
     }
 }

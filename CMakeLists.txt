@@ -35,7 +35,7 @@ qt_add_qml_module(${APP_TARGET} URI ${APP_TARGET} VERSION 1.0
         Views/Telemetry/TelemetryWindow.qml
         Views/Telemetry/TelemetryChart.qml)
 
-target_include_directories(${APP_TARGET} PRIVATE header "third_party/irsdk 1.18/irsdk")
+target_include_directories(${APP_TARGET} PRIVATE "third_party/irsdk 1.18/irsdk")
 
 target_precompile_headers(${APP_TARGET} PRIVATE pch.h)
 
