@@ -7,7 +7,7 @@ using namespace ApexifyHUD::ViewModels::Telemetry;
 TelemetryChartVM::TelemetryChartVM(QObject* parent)
     : QObject(parent)
 {
-    connect(&m_timer, &QTimer::timeout, this, &TelemetryChartVM::tick);
+    connect(&m_timer, &QTimer::timeout, this, &TelemetryChartVM::onTimerTick);
     m_timer.setInterval(16); // use 16 for ~60 Hz
     m_timer.setTimerType(Qt::CoarseTimer);
 }
@@ -27,7 +27,7 @@ int TelemetryChartVM::toPercent(float value01)
     return static_cast<int>(value01 * 100.0f + 0.5f);
 }
 
-void TelemetryChartVM::tick()
+void TelemetryChartVM::onTimerTick()
 {
     irsdkClient& c = irsdkClient::instance();
 
@@ -38,6 +38,7 @@ void TelemetryChartVM::tick()
         m_lastStatusId = status;
         m_varIdxThrottle = -1;
         m_varIdxBrake = -1;
+        m_varIdxAbs = -1;
     }
 
   //  if (m_randomValue == 50)
@@ -71,20 +72,32 @@ void TelemetryChartVM::tick()
         m_varIdxThrottle = c.getVarIdx("Throttle");
     if (m_varIdxBrake < 0)
         m_varIdxBrake = c.getVarIdx("Brake");
+    if (m_varIdxAbs < 0)
+        m_varIdxAbs = c.getVarIdx("BrakeABSactive");
 
     if (m_varIdxThrottle >= 0) {
         const int value = toPercent(c.getVarFloat(m_varIdxThrottle));
-//        if (value != m_throttle) {
+        if (value != m_throttle) {
             m_throttle = value;
             emit throttleChanged();
-//        }
+        }
     }
 
     if (m_varIdxBrake >= 0) {
         const int value = toPercent(c.getVarFloat(m_varIdxBrake));
-//        if (value != m_brake) {
+        if (value != m_brake) {
             m_brake = value;
             emit brakeChanged();
-//        }
+        }
     }
+
+    if (m_varIdxAbs >= 0) {
+        const bool value = c.getVarBool(m_varIdxAbs);
+        if (value != m_abs) {
+            m_abs = value;
+            emit absChanged();
+        }
+    }
+
+    emit tick();
 }
