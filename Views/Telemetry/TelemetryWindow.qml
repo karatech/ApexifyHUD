@@ -5,8 +5,11 @@ import QtCharts
 import Qt.labs.settings 1.1
 
 Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; minimumHeight: 80
-    flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+    flags: Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     color: "transparent"
+
+    // Break the link to the main window so they raise independently
+    transientParent: null
 
     function clampOpacity(v) { return Math.min(1.0, Math.max(0.4, v)); }
 
