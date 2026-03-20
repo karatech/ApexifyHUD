@@ -11,21 +11,27 @@ namespace ApexifyHUD::ViewModels::Telemetry
         Q_OBJECT
             Q_PROPERTY(int throttle READ throttle NOTIFY throttleChanged)
             Q_PROPERTY(int brake READ brake NOTIFY brakeChanged)
+            Q_PROPERTY(bool abs READ abs NOTIFY absChanged)
 
     public:
         explicit TelemetryChartVM(QObject* parent = nullptr);
 
         int throttle() const { return m_throttle; }
         int brake() const { return m_brake; }
+        bool abs() const { return m_abs; }
 
         void start();
 
     signals:
+        // Emitted after a tick updates the properties
+        void tick();
+
         void throttleChanged();
         void brakeChanged();
+        void absChanged();
 
     private slots:
-        void tick();
+        void onTimerTick();
 
     private:
         static int toPercent(float value01);
@@ -33,10 +39,12 @@ namespace ApexifyHUD::ViewModels::Telemetry
         QTimer m_timer;
         int m_throttle = 0;
         int m_brake = 0;
+        bool m_abs = false;
 
 
         int m_varIdxThrottle = -1;
         int m_varIdxBrake = -1;
+        int m_varIdxAbs = -1;
         int m_lastStatusId = -1;
 
         int m_randomValue = 0;

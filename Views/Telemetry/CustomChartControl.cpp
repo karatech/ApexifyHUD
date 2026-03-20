@@ -27,6 +27,15 @@ void CustomChartControl::setBrakeColor(const QColor &color) {
     }
 }
 
+void CustomChartControl::setAbsColor(const QColor &color)
+{
+    if (m_absColor != color) {
+        m_absColor = color;
+        emit absColorChanged();
+        update();
+    }
+}
+
 void CustomChartControl::setMaxPoints(int points) {
     if (m_maxPoints != points) {
         m_maxPoints = points;
@@ -34,12 +43,14 @@ void CustomChartControl::setMaxPoints(int points) {
     }
 }
 
-void CustomChartControl::appendData(float throttle, float brake) {
+void CustomChartControl::appendData(float throttle, float brake, bool abs) {
     m_throttleData.append(throttle);
     m_brakeData.append(brake);
+    m_absData.append(abs ? brake : -1.0f);
 
     if (m_throttleData.size() > m_maxPoints) m_throttleData.removeFirst();
     if (m_brakeData.size() > m_maxPoints) m_brakeData.removeFirst();
+    if (m_absData.size() > m_maxPoints) m_absData.removeFirst();
 
     update(); // Triggers a call to paint()
 }
@@ -65,7 +76,7 @@ void CustomChartControl::paint(QPainter *painter) {
 
         // Set your desired thick line properties here
         QPen pen(color);
-        pen.setWidth(1.2); // VERY THICK LINES
+        pen.setWidth(2); // VERY THICK LINES
         pen.setCapStyle(Qt::RoundCap);
         pen.setJoinStyle(Qt::RoundJoin);
         painter->setPen(pen);
@@ -77,7 +88,16 @@ void CustomChartControl::paint(QPainter *painter) {
             float x = i * dx;
             float val = qBound(0.0f, data[i], 100.0f);
             float y = h - (val / 100.0f * h);
-            polygon.append(QPointF(x, y));
+
+            if(data[i] >= 0.0f)
+            {
+                polygon.append(QPointF(x, y));
+            }
+            else if(polygon.size() > 1)
+            {
+                painter->drawPolyline(polygon);
+                polygon.clear();
+            }
         }
 
         painter->drawPolyline(polygon);
@@ -85,4 +105,5 @@ void CustomChartControl::paint(QPainter *painter) {
 
     drawLine(m_throttleData, m_throttleColor);
     drawLine(m_brakeData, m_brakeColor);
+    drawLine(m_absData, m_absColor);
 }

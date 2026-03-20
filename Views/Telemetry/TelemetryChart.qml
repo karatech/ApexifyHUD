@@ -10,7 +10,7 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
     property int currentBrake: telemetryChartVM ? telemetryChartVM.brake : 0
 
     CustomChartControl { id: fastChart; anchors.fill: parent; anchors.margins: 10; anchors.leftMargin: 37
-        throttleColor: "#00FF00"; brakeColor: "#FF0000"; maxPoints: 500
+        throttleColor: "#00FF00"; brakeColor: "#FF0000"; absColor: "#0000BB"; maxPoints: 500
     }
 
     Text { id: throttleValue; text: currentThrottle; color: "#00FF00"; font.pixelSize: 14; font.bold: true
@@ -23,9 +23,9 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
     Connections {
         target: telemetryChartVM
         
-        function onThrottleChanged() {
+        function onTick() {
             // Only append data when C++ actually has new data
-            fastChart.appendData(telemetryChartVM.throttle, telemetryChartVM.brake)
+            fastChart.appendData(telemetryChartVM.throttle, telemetryChartVM.brake, telemetryChartVM.abs)
         }
     }
 }
