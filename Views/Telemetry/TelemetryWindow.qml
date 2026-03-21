@@ -1,7 +1,6 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick
-import QtCharts
+import QtQuick.Controls.Material 2.15
+import QtQuick 6.9
+import QtQuick.Controls 6.9
 import Qt.labs.settings 1.1
 
 Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; minimumHeight: 80

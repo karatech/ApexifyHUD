@@ -61,13 +61,9 @@ void CustomChartControl::paint(QPainter *painter) {
     const float w = width();
     const float h = height();
 
-    // Draw Helper Guidelines
-    QPen guidePen(QColor("#00FF00"), 1);
+    QPen guidePen(QColor(119, 119, 119, 75), 1);
     painter->setPen(guidePen);
     painter->drawLine(QLineF(0, 0, w, 0)); // Top line (100%)
-
-    guidePen.setColor(QColor("#FF0000"));
-    painter->setPen(guidePen);
     painter->drawLine(QLineF(0, h, w, h)); // Bottom line (0%)
 
     // Helper to draw a data line

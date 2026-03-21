@@ -14,14 +14,20 @@ using namespace ApexifyHUD::ViewModels;
 using namespace ApexifyHUD::Views::Telemetry;
 
 int main(int argc, char* argv[]) {
+    // Global Qt Quick Controls style/theme (must be set before QApplication)
+    qputenv("QT_QUICK_CONTROLS_STYLE", "Material");
+    qputenv("QT_QUICK_CONTROLS_MATERIAL_THEME", "Dark");
+    qputenv("QT_QUICK_CONTROLS_MATERIAL_ACCENT", "DeepOrange");
+    qputenv("QT_QUICK_CONTROLS_MATERIAL_PRIMARY", "Grey");
+
     // Request 4x MSAA for smooth Scene Graph lines
     QSurfaceFormat format;
     format.setSamples(4);
-    QSurfaceFormat::setDefaultFormat(format); 
+    QSurfaceFormat::setDefaultFormat(format);
 
     QApplication app(argc, argv);
 
-    QCoreApplication::setOrganizationName("Apexify"); 
+    QCoreApplication::setOrganizationName("Apexify");
     QCoreApplication::setApplicationName("ApexifyHUD");
 
     app.setWindowIcon(QIcon(":/ico.png"));

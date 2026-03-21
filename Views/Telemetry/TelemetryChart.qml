@@ -1,11 +1,10 @@
-import QtQuick 2.15
+import QtQuick 6.9
+import QtQuick.Controls.Material 2.15
 import App 1.0  // Imports our newly registered class
 
 Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } clip: true
-    // Use the system palette to derive a standard background color
-    SystemPalette { id: palette; colorGroup: SystemPalette.Dark }
-    color: palette.window // Automatically adopts the theme's window background color
-    
+    color: telemetryChart.Material.background
+
     property int currentThrottle: telemetryChartVM ? telemetryChartVM.throttle : 0
     property int currentBrake: telemetryChartVM ? telemetryChartVM.brake : 0
 

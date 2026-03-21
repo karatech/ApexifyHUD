@@ -8,7 +8,8 @@ import QtQuick.Dialogs
 
 ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     width: 640; height: 800; visible: true
-    Material.theme: Material.Dark; Material.accent: Material.DeepOrange; Material.primary: Material.Grey
+
+    onClosing: Qt.quit()
 
     property string selectedIbtFileName: ""
     property string selectedIbtFilePath: ""
