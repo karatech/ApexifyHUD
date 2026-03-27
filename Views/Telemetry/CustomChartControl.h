@@ -1,12 +1,17 @@
 #pragma once
-#include <QQuickPaintedItem> // Changed from QQuickItem
+#include <QQuickPaintedItem>
 #include <QVector>
 #include <QColor>
 
 
 namespace ApexifyHUD::Views::Telemetry
 {
-    class CustomChartControl : public QQuickPaintedItem { // Changed from QQuickItem
+    struct BrakePeakAnnotation {
+        int globalIndex;   // absolute sample index where the peak was detected
+        int value;         // brake percentage 0–100
+    };
+
+    class CustomChartControl : public QQuickPaintedItem {
         Q_OBJECT
         Q_PROPERTY(QColor throttleColor READ throttleColor WRITE setThrottleColor NOTIFY throttleColorChanged)
         Q_PROPERTY(QColor brakeColor READ brakeColor WRITE setBrakeColor NOTIFY brakeColorChanged)
@@ -37,7 +42,6 @@ namespace ApexifyHUD::Views::Telemetry
         void maxPointsChanged();
 
     protected:
-        // We override paint() instead of updatePaintNode()
         void paint(QPainter* painter) override;
 
     private:
@@ -49,5 +53,11 @@ namespace ApexifyHUD::Views::Telemetry
         QColor m_brakeColor = QColor("#FF0000");
         QColor m_absColor = QColor("#0000FF");
         int m_maxPoints = 500;
+
+        // Peak detection — 2 s before + 2 s after at ~60 Hz
+        static constexpr int kHalfWindow = 125;
+        static constexpr float kMinBrake  = 10.0f;   // ignore trivial taps
+        int m_globalSampleCount = 0;
+        QVector<BrakePeakAnnotation> m_peakAnnotations;
     };
 }

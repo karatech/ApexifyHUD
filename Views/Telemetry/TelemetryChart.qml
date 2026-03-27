@@ -8,7 +8,7 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
     property int currentThrottle: telemetryChartVM ? telemetryChartVM.throttle : 0
     property int currentBrake: telemetryChartVM ? telemetryChartVM.brake : 0
 
-    CustomChartControl { id: fastChart; anchors.fill: parent; anchors.margins: 10; anchors.leftMargin: 37; anchors.bottomMargin: 26
+    CustomChartControl { id: fastChart; anchors.fill: parent; anchors.margins: 3; anchors.leftMargin: 37;
         throttleColor: "#00FF00"; brakeColor: "#FF0000"; absColor: "#0000BB"; maxPoints: 500
     }
 
@@ -16,24 +16,13 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
         anchors.top: fastChart.top; anchors.topMargin: -7; anchors.left: parent.left; anchors.leftMargin: 7;
     }
     Text { id: brakeValue; text: currentBrake; color: "#FF0000"; font.pixelSize: 14; font.bold: true
-        anchors.bottom: fastChart.bottom; anchors.bottomMargin: -7; anchors.left: parent.left; anchors.leftMargin: 7;
-    }
-
-    Text {
-        id: maxBrakeLabel
-        text: "Max brake (4s): " + (telemetryChartVM ? telemetryChartVM.maxBrake4s : 0) + "%"
-        color: "#FF6666"
-        font.pixelSize: 11
-        anchors.top: fastChart.bottom
-        anchors.topMargin: 4
-        anchors.horizontalCenter: fastChart.horizontalCenter
+        anchors.bottom: fastChart.bottom; anchors.bottomMargin: 7; anchors.left: parent.left; anchors.leftMargin: 7;
     }
 
     Connections {
         target: telemetryChartVM
-        
+
         function onTick() {
-            // Only append data when C++ actually has new data
             fastChart.appendData(telemetryChartVM.throttle, telemetryChartVM.brake, telemetryChartVM.abs)
         }
     }

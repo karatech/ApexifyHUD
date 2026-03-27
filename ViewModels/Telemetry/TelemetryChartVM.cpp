@@ -2,15 +2,11 @@
 
 #include "irsdk_client.h"
 
-#include <algorithm>
-
 using namespace ApexifyHUD::ViewModels::Telemetry;
 
 TelemetryChartVM::TelemetryChartVM(QObject* parent)
     : QObject(parent)
 {
-    m_brakeWindow.reserve(kBrakeWindowSize);
-
     connect(&m_timer, &QTimer::timeout, this, &TelemetryChartVM::onTimerTick);
     m_timer.setInterval(16); // use 16 for ~60 Hz
     m_timer.setTimerType(Qt::CoarseTimer);
@@ -68,17 +64,6 @@ void TelemetryChartVM::onTimerTick()
         if (value != m_brake) {
             m_brake = value;
             emit brakeChanged();
-        }
-
-        // Update rolling 4-second brake window
-        if (m_brakeWindow.size() >= kBrakeWindowSize)
-            m_brakeWindow.removeFirst();
-        m_brakeWindow.append(value);
-
-        const int newMax = *std::max_element(m_brakeWindow.cbegin(), m_brakeWindow.cend());
-        if (newMax != m_maxBrake4s) {
-            m_maxBrake4s = newMax;
-            emit maxBrake4sChanged();
         }
     }
 
