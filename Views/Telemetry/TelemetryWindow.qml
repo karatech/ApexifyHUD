@@ -10,6 +10,10 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
     // Break the link to the main window so they raise independently
     transientParent: null
 
+    property alias showThrottle: telemetryChart.showThrottle
+    property alias showBrake: telemetryChart.showBrake
+    property alias showAbs: telemetryChart.showAbs
+
     function clampOpacity(v) { return Math.min(1.0, Math.max(0.4, v)); }
 
     Component.onCompleted: { root.opacity = clampOpacity(windowSettings.opacity) }

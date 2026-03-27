@@ -8,6 +8,10 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
     property int currentThrottle: telemetryChartVM ? telemetryChartVM.throttle : 0
     property int currentBrake: telemetryChartVM ? telemetryChartVM.brake : 0
 
+    property alias showThrottle: fastChart.showThrottle
+    property alias showBrake: fastChart.showBrake
+    property alias showAbs: fastChart.showAbs
+
     CustomChartControl { id: fastChart; anchors.fill: parent; anchors.margins: 3; anchors.leftMargin: 37;
         throttleColor: "#00FF00"; brakeColor: "#FF0000"; absColor: "#0000BB"; maxPoints: 500
     }

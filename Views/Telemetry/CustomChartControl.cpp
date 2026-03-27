@@ -43,6 +43,30 @@ void CustomChartControl::setMaxPoints(int points) {
     }
 }
 
+void CustomChartControl::setShowThrottle(bool show) {
+    if (m_showThrottle != show) {
+        m_showThrottle = show;
+        emit showThrottleChanged();
+        update();
+    }
+}
+
+void CustomChartControl::setShowBrake(bool show) {
+    if (m_showBrake != show) {
+        m_showBrake = show;
+        emit showBrakeChanged();
+        update();
+    }
+}
+
+void CustomChartControl::setShowAbs(bool show) {
+    if (m_showAbs != show) {
+        m_showAbs = show;
+        emit showAbsChanged();
+        update();
+    }
+}
+
 void CustomChartControl::appendData(float throttle, float brake, bool abs) {
     m_throttleData.append(throttle);
     m_brakeData.append(brake);
@@ -139,19 +163,19 @@ void CustomChartControl::paint(QPainter *painter) {
     };
 
     painter->setCompositionMode(QPainter::CompositionMode_Plus);
-    drawLine(m_throttleData, m_throttleColor);
-    drawLine(m_brakeData,    m_brakeColor);
-    drawLine(m_absData,      m_absColor);
+    if (m_showThrottle) drawLine(m_throttleData, m_throttleColor);
+    if (m_showBrake)    drawLine(m_brakeData,    m_brakeColor);
+    if (m_showAbs)      drawLine(m_absData,      m_absColor);
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
 
     // --- peak annotations ---
-    if (!m_peakAnnotations.isEmpty() && !m_brakeData.isEmpty()) {
+    if (m_showBrake && !m_peakAnnotations.isEmpty() && !m_brakeData.isEmpty()) {
         const float dx = w / static_cast<float>(m_maxPoints - 1);
         const int firstVisible = m_globalSampleCount - m_brakeData.size();
 
         QFont font;
         font.setPixelSize(11);
-        font.setBold(true);
+        font.setBold(false);
         painter->setFont(font);
         painter->setPen(m_brakeColor);
         const QFontMetricsF fm(font);
@@ -161,9 +185,11 @@ void CustomChartControl::paint(QPainter *painter) {
             if (localIdx < 0 || localIdx >= m_brakeData.size()) continue;
 
             const float x = localIdx * dx;
-            const QString text = QString::number(peak.value) + "%";
+            const QString text = QString::number(peak.value);
             const float textW = fm.horizontalAdvance(text);
+            painter->setOpacity(0.43);
             painter->drawText(QPointF(x - textW * 0.5f, chartH + 15.0f), text);
+            painter->setOpacity(1.0);
         }
     }
 }

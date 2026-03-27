@@ -17,6 +17,9 @@ namespace ApexifyHUD::Views::Telemetry
         Q_PROPERTY(QColor brakeColor READ brakeColor WRITE setBrakeColor NOTIFY brakeColorChanged)
         Q_PROPERTY(QColor absColor READ absColor WRITE setAbsColor NOTIFY absColorChanged)
         Q_PROPERTY(int maxPoints READ maxPoints WRITE setMaxPoints NOTIFY maxPointsChanged)
+        Q_PROPERTY(bool showThrottle READ showThrottle WRITE setShowThrottle NOTIFY showThrottleChanged)
+        Q_PROPERTY(bool showBrake READ showBrake WRITE setShowBrake NOTIFY showBrakeChanged)
+        Q_PROPERTY(bool showAbs READ showAbs WRITE setShowAbs NOTIFY showAbsChanged)
 
     public:
         CustomChartControl(QQuickItem* parent = nullptr);
@@ -33,6 +36,15 @@ namespace ApexifyHUD::Views::Telemetry
         int maxPoints() const { return m_maxPoints; }
         void setMaxPoints(int points);
 
+        bool showThrottle() const { return m_showThrottle; }
+        void setShowThrottle(bool show);
+
+        bool showBrake() const { return m_showBrake; }
+        void setShowBrake(bool show);
+
+        bool showAbs() const { return m_showAbs; }
+        void setShowAbs(bool show);
+
         Q_INVOKABLE void appendData(float throttle, float brake, bool abs);
 
     signals:
@@ -40,6 +52,9 @@ namespace ApexifyHUD::Views::Telemetry
         void brakeColorChanged();
         void absColorChanged();
         void maxPointsChanged();
+        void showThrottleChanged();
+        void showBrakeChanged();
+        void showAbsChanged();
 
     protected:
         void paint(QPainter* painter) override;
@@ -53,6 +68,10 @@ namespace ApexifyHUD::Views::Telemetry
         QColor m_brakeColor = QColor("#FF0000");
         QColor m_absColor = QColor("#0000FF");
         int m_maxPoints = 500;
+
+        bool m_showThrottle = true;
+        bool m_showBrake = true;
+        bool m_showAbs = true;
 
         // Peak detection — 2 s before + 2 s after at ~60 Hz
         static constexpr int kHalfWindow = 85;
