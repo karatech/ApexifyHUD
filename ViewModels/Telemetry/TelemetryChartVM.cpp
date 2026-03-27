@@ -2,11 +2,15 @@
 
 #include "irsdk_client.h"
 
+#include <algorithm>
+
 using namespace ApexifyHUD::ViewModels::Telemetry;
 
 TelemetryChartVM::TelemetryChartVM(QObject* parent)
     : QObject(parent)
 {
+    m_brakeWindow.reserve(kBrakeWindowSize);
+
     connect(&m_timer, &QTimer::timeout, this, &TelemetryChartVM::onTimerTick);
     m_timer.setInterval(16); // use 16 for ~60 Hz
     m_timer.setTimerType(Qt::CoarseTimer);
@@ -41,30 +45,6 @@ void TelemetryChartVM::onTimerTick()
         m_varIdxAbs = -1;
     }
 
-  //  if (m_randomValue == 50)
-  //  {
-  //      m_randomValue--;
-  //      m_upTrend = false;
-  //  }
-  //  if (m_randomValue == 0)
-  //  {
-  //      m_randomValue++;
-  //      m_upTrend = true;
-  //  }
-  //  if (m_upTrend)
-  //  {
-  //      m_randomValue++;
-
-  //  }
-  //  else
-  //  {
-		//m_randomValue--;
-  //  }
-  //  m_throttle = m_randomValue + 50;
-  //  emit throttleChanged();
-  //  m_brake = m_randomValue;
-  //  emit brakeChanged();
-
     if (!hasNew || !c.isConnected())
         return;
 
@@ -88,6 +68,17 @@ void TelemetryChartVM::onTimerTick()
         if (value != m_brake) {
             m_brake = value;
             emit brakeChanged();
+        }
+
+        // Update rolling 4-second brake window
+        if (m_brakeWindow.size() >= kBrakeWindowSize)
+            m_brakeWindow.removeFirst();
+        m_brakeWindow.append(value);
+
+        const int newMax = *std::max_element(m_brakeWindow.cbegin(), m_brakeWindow.cend());
+        if (newMax != m_maxBrake4s) {
+            m_maxBrake4s = newMax;
+            emit maxBrake4sChanged();
         }
     }
 
