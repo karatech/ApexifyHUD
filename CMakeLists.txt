@@ -32,6 +32,10 @@ qt_add_resources(${APP_TARGET} "app_resources"
 qt_add_qml_module(${APP_TARGET} URI ${APP_TARGET} VERSION 1.0
     QML_FILES
         Views/MainWindow.qml
+        Views/Controls/CustomCheckBox.qml
+        Views/Controls/CustomRadioButton.qml
+        Views/Controls/ColorPickerPopup.qml
+        Views/Controls/SettingsCheckBox.qml
         Views/Telemetry/TelemetryWindow.qml
         Views/Telemetry/TelemetryChart.qml
         Views/Telemetry/TelemetrySettingsPopup.qml)
