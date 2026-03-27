@@ -302,173 +302,206 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     // --- Telemetry settings popup ---
     Controls.Popup { id: settingsPopup
         x: settingsBtn.x + 16; y: settingsBtn.y + settingsBtn.height + 20
-        width: 160; padding: 6
+        padding: 6
         background: Rectangle { radius: 6; color: "#DD1E1E1E"; border.color: "#555555"; border.width: 1 }
 
-        ColumnLayout { spacing: 0; width: parent.width
+        RowLayout { spacing: 0
 
-            Controls.Label { text: "Traces"; color: "#999"; font.pixelSize: 10; font.bold: true }
+            // ---- Left: settings ----
+            ColumnLayout { spacing: 0; Layout.alignment: Qt.AlignTop; width: 160;
 
-            RowLayout { spacing: 4; Layout.fillWidth: true
-                Controls.CheckBox { id: chkThrottle; text: "Throttle"; checked: mainWindow.showThrottle
-                    padding: 0; topPadding: 2; bottomPadding: 2; Layout.fillWidth: true
-                    onCheckedChanged: mainWindow.showThrottle = checked
-                    contentItem: Text { text: parent.text; color: mainWindow.throttleColor; font.pixelSize: 12
-                        leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                Controls.Label { text: "Traces"; color: "#999"; font.pixelSize: 10; font.bold: true }
+
+                RowLayout { spacing: 4; Layout.fillWidth: true
+                    Controls.CheckBox { id: chkThrottle; text: "Throttle"; checked: mainWindow.showThrottle
+                        padding: 0; topPadding: 2; bottomPadding: 2; Layout.fillWidth: true
+                        onCheckedChanged: mainWindow.showThrottle = checked
+                        contentItem: Text { text: parent.text; color: mainWindow.throttleColor; font.pixelSize: 12
+                            leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                        }
+                        indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                            y: (parent.height - height) / 2; radius: 2
+                            border.width: 1; border.color: chkThrottle.checked ? mainWindow.throttleColor : "#888"
+                            color: chkThrottle.checked ? mainWindow.throttleColor : "transparent"
+                            Text { anchors.centerIn: parent; text: "✓"; visible: chkThrottle.checked
+                                font.pixelSize: 9; color: "#000000"
+                            }
+                        }
                     }
-                    indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
-                        y: (parent.height - height) / 2; radius: 2
-                        border.width: 1; border.color: chkThrottle.checked ? mainWindow.throttleColor : "#888"
-                        color: chkThrottle.checked ? mainWindow.throttleColor : "transparent"
-                        Text { anchors.centerIn: parent; text: "✓"; visible: chkThrottle.checked
-                            font.pixelSize: 9; color: "#000000"
+                    Rectangle { width: 14; height: 14; radius: 3; color: mainWindow.throttleColor
+                        border.width: 1; border.color: "#888"
+                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                            onClicked: throttleColorPicker.visible ? throttleColorPicker.close() : throttleColorPicker.open()
                         }
                     }
                 }
-                Rectangle { width: 14; height: 14; radius: 3; color: mainWindow.throttleColor
-                    border.width: 1; border.color: "#888"
-                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: throttleColorPicker.visible ? throttleColorPicker.close() : throttleColorPicker.open()
+
+                RowLayout { spacing: 4; Layout.fillWidth: true
+                    Controls.CheckBox { id: chkBrake; text: "Brake"; checked: mainWindow.showBrake
+                        padding: 0; topPadding: 2; bottomPadding: 2; Layout.fillWidth: true
+                        onCheckedChanged: mainWindow.showBrake = checked
+                        contentItem: Text { text: parent.text; color: mainWindow.brakeColor; font.pixelSize: 12
+                            leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                        }
+                        indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                            y: (parent.height - height) / 2; radius: 2
+                            border.width: 1; border.color: chkBrake.checked ? mainWindow.brakeColor : "#888"
+                            color: chkBrake.checked ? mainWindow.brakeColor : "transparent"
+                            Text { anchors.centerIn: parent; text: "✓"; visible: chkBrake.checked
+                                font.pixelSize: 9; color: "#FFFFFF"
+                            }
+                        }
+                    }
+                    Rectangle { width: 14; height: 14; radius: 3; color: mainWindow.brakeColor
+                        border.width: 1; border.color: "#888"
+                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                            onClicked: brakeColorPicker.visible ? brakeColorPicker.close() : brakeColorPicker.open()
+                        }
                     }
                 }
-            }
 
-            RowLayout { spacing: 4; Layout.fillWidth: true
-                Controls.CheckBox { id: chkBrake; text: "Brake"; checked: mainWindow.showBrake
-                    padding: 0; topPadding: 2; bottomPadding: 2; Layout.fillWidth: true
-                    onCheckedChanged: mainWindow.showBrake = checked
-                    contentItem: Text { text: parent.text; color: mainWindow.brakeColor; font.pixelSize: 12
+                RowLayout { spacing: 4; Layout.fillWidth: true
+                    Controls.CheckBox { id: chkAbs; text: "ABS"; checked: mainWindow.showAbs
+                        padding: 0; topPadding: 2; bottomPadding: 2; Layout.fillWidth: true
+                        onCheckedChanged: mainWindow.showAbs = checked
+                        contentItem: Text { text: parent.text; color: mainWindow.absColor; font.pixelSize: 12
+                            leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                        }
+                        indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                            y: (parent.height - height) / 2; radius: 2
+                            border.width: 1; border.color: chkAbs.checked ? mainWindow.absColor : "#888"
+                            color: chkAbs.checked ? mainWindow.absColor : "transparent"
+                            Text { anchors.centerIn: parent; text: "✓"; visible: chkAbs.checked
+                                font.pixelSize: 9; color: "#FFFFFF"
+                            }
+                        }
+                    }
+                    Rectangle { width: 14; height: 14; radius: 3; color: mainWindow.absColor
+                        border.width: 1; border.color: "#888"
+                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                            onClicked: absColorPicker.visible ? absColorPicker.close() : absColorPicker.open()
+                        }
+                    }
+                }
+
+                Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+
+                Controls.Label { text: "Labels"; color: "#999"; font.pixelSize: 10; font.bold: true }
+
+                Controls.CheckBox { id: chkValues; text: "Values"; checked: mainWindow.showValues
+                    padding: 0; topPadding: 2; bottomPadding: 2
+                    onCheckedChanged: mainWindow.showValues = checked
+                    contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
                         leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
                     }
                     indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
                         y: (parent.height - height) / 2; radius: 2
-                        border.width: 1; border.color: chkBrake.checked ? mainWindow.brakeColor : "#888"
-                        color: chkBrake.checked ? mainWindow.brakeColor : "transparent"
-                        Text { anchors.centerIn: parent; text: "✓"; visible: chkBrake.checked
+                        border.width: 1; border.color: chkValues.checked ? "#777" : "#888"
+                        color: chkValues.checked ? "#777" : "transparent"
+                        Text { anchors.centerIn: parent; text: "✓"; visible: chkValues.checked
                             font.pixelSize: 9; color: "#FFFFFF"
                         }
                     }
                 }
-                Rectangle { width: 14; height: 14; radius: 3; color: mainWindow.brakeColor
-                    border.width: 1; border.color: "#888"
-                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: brakeColorPicker.visible ? brakeColorPicker.close() : brakeColorPicker.open()
-                    }
-                }
-            }
 
-            RowLayout { spacing: 4; Layout.fillWidth: true
-                Controls.CheckBox { id: chkAbs; text: "ABS"; checked: mainWindow.showAbs
-                    padding: 0; topPadding: 2; bottomPadding: 2; Layout.fillWidth: true
-                    onCheckedChanged: mainWindow.showAbs = checked
-                    contentItem: Text { text: parent.text; color: mainWindow.absColor; font.pixelSize: 12
+                Controls.CheckBox { id: chkPeaks; text: "Brake peaks"; checked: mainWindow.showPeaks
+                    padding: 0; topPadding: 2; bottomPadding: 2
+                    onCheckedChanged: mainWindow.showPeaks = checked
+                    contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
                         leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
                     }
                     indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
                         y: (parent.height - height) / 2; radius: 2
-                        border.width: 1; border.color: chkAbs.checked ? mainWindow.absColor : "#888"
-                        color: chkAbs.checked ? mainWindow.absColor : "transparent"
-                        Text { anchors.centerIn: parent; text: "✓"; visible: chkAbs.checked
+                        border.width: 1; border.color: chkPeaks.checked ? "#777" : "#888"
+                        color: chkPeaks.checked ? "#777" : "transparent"
+                        Text { anchors.centerIn: parent; text: "✓"; visible: chkPeaks.checked
                             font.pixelSize: 9; color: "#FFFFFF"
                         }
                     }
                 }
-                Rectangle { width: 14; height: 14; radius: 3; color: mainWindow.absColor
-                    border.width: 1; border.color: "#888"
-                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: absColorPicker.visible ? absColorPicker.close() : absColorPicker.open()
+
+                Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+
+                Controls.Label { text: "Grid"; color: "#999"; font.pixelSize: 10; font.bold: true }
+
+                Controls.CheckBox { id: chkGridH; text: "Horizontal"; checked: mainWindow.showGridH
+                    padding: 0; topPadding: 2; bottomPadding: 2
+                    onCheckedChanged: mainWindow.showGridH = checked
+                    contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
+                        leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                    }
+                    indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                        y: (parent.height - height) / 2; radius: 2
+                        border.width: 1; border.color: chkGridH.checked ? "#777" : "#888"
+                        color: chkGridH.checked ? "#777" : "transparent"
+                        Text { anchors.centerIn: parent; text: "✓"; visible: chkGridH.checked
+                            font.pixelSize: 9; color: "#FFFFFF"
+                        }
+                    }
+                }
+
+                Controls.CheckBox { id: chkGridV; text: "Vertical"; checked: mainWindow.showGridV
+                    padding: 0; topPadding: 2; bottomPadding: 2
+                    onCheckedChanged: mainWindow.showGridV = checked
+                    contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
+                        leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                    }
+                    indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                        y: (parent.height - height) / 2; radius: 2
+                        border.width: 1; border.color: chkGridV.checked ? "#777" : "#888"
+                        color: chkGridV.checked ? "#777" : "transparent"
+                        Text { anchors.centerIn: parent; text: "✓"; visible: chkGridV.checked
+                            font.pixelSize: 9; color: "#FFFFFF"
+                        }
+                    }
+                }
+
+                Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+
+                Rectangle { width: parent.width; height: 18; radius: 3; color: resetArea.containsMouse ? "#333" : "transparent"
+                    Text { anchors.centerIn: parent; text: "Reset"; color: "#999"; font.pixelSize: 10 }
+                    MouseArea { id: resetArea; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true
+                        onClicked: {
+                            mainWindow.showThrottle = true
+                            mainWindow.showBrake = true
+                            mainWindow.showAbs = true
+                            mainWindow.showGridH = false
+                            mainWindow.showGridV = false
+                            mainWindow.showValues = false
+                            mainWindow.showPeaks = true
+                            mainWindow.throttleColor = "#00FF00"
+                            mainWindow.brakeColor = "#FF0000"
+                            mainWindow.absColor = "#5555FF"
+                            if (telemetryWinLoader.item) {
+                                telemetryWinLoader.item.width = 250
+                                telemetryWinLoader.item.height = 100
+                            }
+                        }
                     }
                 }
             }
 
-            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+            // ---- Vertical delimiter ----
+            Rectangle { width: 1; Layout.fillHeight: true; color: "#444"; Layout.leftMargin: 6; Layout.rightMargin: 6 }
 
-            Controls.Label { text: "Labels"; color: "#999"; font.pixelSize: 10; font.bold: true }
+            // ---- Right: shortcuts info ----
+            ColumnLayout { spacing: 4; Layout.alignment: Qt.AlignTop; Layout.preferredWidth: 110
 
-            Controls.CheckBox { id: chkValues; text: "Values"; checked: mainWindow.showValues
-                padding: 0; topPadding: 2; bottomPadding: 2
-                onCheckedChanged: mainWindow.showValues = checked
-                contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
-                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
-                }
-                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
-                    y: (parent.height - height) / 2; radius: 2
-                    border.width: 1; border.color: chkValues.checked ? "#777" : "#888"
-                    color: chkValues.checked ? "#777" : "transparent"
-                    Text { anchors.centerIn: parent; text: "✓"; visible: chkValues.checked
-                        font.pixelSize: 9; color: "#FFFFFF"
-                    }
-                }
-            }
+                Controls.Label { text: "Shortcuts"; color: "#999"; font.pixelSize: 10; font.bold: true }
 
-            Controls.CheckBox { id: chkPeaks; text: "Brake peaks"; checked: mainWindow.showPeaks
-                padding: 0; topPadding: 2; bottomPadding: 2
-                onCheckedChanged: mainWindow.showPeaks = checked
-                contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
-                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
-                }
-                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
-                    y: (parent.height - height) / 2; radius: 2
-                    border.width: 1; border.color: chkPeaks.checked ? "#777" : "#888"
-                    color: chkPeaks.checked ? "#777" : "transparent"
-                    Text { anchors.centerIn: parent; text: "✓"; visible: chkPeaks.checked
-                        font.pixelSize: 9; color: "#FFFFFF"
-                    }
-                }
-            }
-
-            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
-
-            Controls.Label { text: "Grid"; color: "#999"; font.pixelSize: 10; font.bold: true }
-
-            Controls.CheckBox { id: chkGridH; text: "Horizontal"; checked: mainWindow.showGridH
-                padding: 0; topPadding: 2; bottomPadding: 2
-                onCheckedChanged: mainWindow.showGridH = checked
-                contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
-                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
-                }
-                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
-                    y: (parent.height - height) / 2; radius: 2
-                    border.width: 1; border.color: chkGridH.checked ? "#777" : "#888"
-                    color: chkGridH.checked ? "#777" : "transparent"
-                    Text { anchors.centerIn: parent; text: "✓"; visible: chkGridH.checked
-                        font.pixelSize: 9; color: "#FFFFFF"
-                    }
-                }
-            }
-
-            Controls.CheckBox { id: chkGridV; text: "Vertical"; checked: mainWindow.showGridV
-                padding: 0; topPadding: 2; bottomPadding: 2
-                onCheckedChanged: mainWindow.showGridV = checked
-                contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
-                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
-                }
-                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
-                    y: (parent.height - height) / 2; radius: 2
-                    border.width: 1; border.color: chkGridV.checked ? "#777" : "#888"
-                    color: chkGridV.checked ? "#777" : "transparent"
-                    Text { anchors.centerIn: parent; text: "✓"; visible: chkGridV.checked
-                        font.pixelSize: 9; color: "#FFFFFF"
-                    }
-                }
-            }
-
-            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
-
-            Rectangle { width: parent.width; height: 18; radius: 3; color: resetArea.containsMouse ? "#333" : "transparent"
-                Text { anchors.centerIn: parent; text: "Reset"; color: "#999"; font.pixelSize: 10 }
-                MouseArea { id: resetArea; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true
-                    onClicked: {
-                        mainWindow.showThrottle = true
-                        mainWindow.showBrake = true
-                        mainWindow.showAbs = true
-                        mainWindow.showGridH = false
-                        mainWindow.showGridV = false
-                        mainWindow.showValues = false
-                        mainWindow.showPeaks = true
-                        mainWindow.throttleColor = "#00FF00"
-                        mainWindow.brakeColor = "#FF0000"
-                        mainWindow.absColor = "#5555FF"
+                ColumnLayout { spacing: 1
+                    Repeater {
+                        model: [
+                            { key: "Drag",           desc: "Move window" },
+                            { key: "Ctrl + Drag",    desc: "Resize" },
+                            { key: "Middle Click",   desc: "Hide" },
+                            { key: "Scroll Wheel",   desc: "Opacity" }
+                        ]
+                        delegate: ColumnLayout { spacing: 0
+                            required property var modelData
+                            Text { text: modelData.key;  color: "#CCCCCC"; font.pixelSize: 10; font.bold: true }
+                            Text { text: modelData.desc; color: "#777";    font.pixelSize: 9; bottomPadding: 3 }
+                        }
                     }
                 }
             }
