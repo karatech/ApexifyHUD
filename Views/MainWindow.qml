@@ -18,6 +18,8 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     property bool showThrottle: true
     property bool showBrake: true
     property bool showAbs: true
+    property bool showGridH: true
+    property bool showGridV: true
 
     component CustomCheckBox : Controls.CheckBox {
         id: control
@@ -162,15 +164,18 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
         }
     }
 
-    // --- Telemetry trace-visibility popup ---
+    // --- Telemetry settings popup ---
     Controls.Popup { id: settingsPopup
         x: settingsBtn.x + 16; y: settingsBtn.y + settingsBtn.height + 20
-        width: 140; padding: 8
+        width: 160; padding: 6
         background: Rectangle { radius: 6; color: "#DD1E1E1E"; border.color: "#555555"; border.width: 1 }
 
-        ColumnLayout { spacing: 4; width: parent.width
+        ColumnLayout { spacing: 0; width: parent.width
+
+            Controls.Label { text: "Traces"; color: "#999"; font.pixelSize: 10; font.bold: true }
 
             Controls.CheckBox { id: chkThrottle; text: "Throttle"; checked: mainWindow.showThrottle
+                padding: 0; topPadding: 2; bottomPadding: 2
                 onCheckedChanged: mainWindow.showThrottle = checked
                 contentItem: Text { text: parent.text; color: "#00FF00"; font.pixelSize: 12
                     leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
@@ -186,6 +191,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
             }
 
             Controls.CheckBox { id: chkBrake; text: "Brake"; checked: mainWindow.showBrake
+                padding: 0; topPadding: 2; bottomPadding: 2
                 onCheckedChanged: mainWindow.showBrake = checked
                 contentItem: Text { text: parent.text; color: "#FF0000"; font.pixelSize: 12
                     leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
@@ -201,6 +207,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
             }
 
             Controls.CheckBox { id: chkAbs; text: "ABS"; checked: mainWindow.showAbs
+                padding: 0; topPadding: 2; bottomPadding: 2
                 onCheckedChanged: mainWindow.showAbs = checked
                 contentItem: Text { text: parent.text; color: "#5555FF"; font.pixelSize: 12
                     leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
@@ -214,13 +221,51 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
                     }
                 }
             }
+
+            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+
+            Controls.Label { text: "Grid"; color: "#999"; font.pixelSize: 10; font.bold: true }
+
+            Controls.CheckBox { id: chkGridH; text: "Horizontal"; checked: mainWindow.showGridH
+                padding: 0; topPadding: 2; bottomPadding: 2
+                onCheckedChanged: mainWindow.showGridH = checked
+                contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
+                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                }
+                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                    y: (parent.height - height) / 2; radius: 2
+                    border.width: 1; border.color: chkGridH.checked ? "#777" : "#888"
+                    color: chkGridH.checked ? "#777" : "transparent"
+                    Text { anchors.centerIn: parent; text: "✓"; visible: chkGridH.checked
+                        font.pixelSize: 9; color: "#FFFFFF"
+                    }
+                }
+            }
+
+            Controls.CheckBox { id: chkGridV; text: "Vertical"; checked: mainWindow.showGridV
+                padding: 0; topPadding: 2; bottomPadding: 2
+                onCheckedChanged: mainWindow.showGridV = checked
+                contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
+                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                }
+                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                    y: (parent.height - height) / 2; radius: 2
+                    border.width: 1; border.color: chkGridV.checked ? "#777" : "#888"
+                    color: chkGridV.checked ? "#777" : "transparent"
+                    Text { anchors.centerIn: parent; text: "✓"; visible: chkGridV.checked
+                        font.pixelSize: 9; color: "#FFFFFF"
+                    }
+                }
+            }
         }
     }
 
-    // Push trace-visibility down to the loaded telemetry window
+    // Push settings down to the loaded telemetry window
     Binding { target: telemetryWinLoader.item; property: "showThrottle"; value: mainWindow.showThrottle; when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "showBrake";    value: mainWindow.showBrake;    when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "showAbs";      value: mainWindow.showAbs;      when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showGridH";    value: mainWindow.showGridH;    when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showGridV";    value: mainWindow.showGridV;    when: telemetryWinLoader.item }
 
     Loader { id: telemetryWinLoader
         active: telemetryGraphCheck.checked
@@ -254,5 +299,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
         property alias showThrottle: mainWindow.showThrottle
         property alias showBrake: mainWindow.showBrake
         property alias showAbs: mainWindow.showAbs
+        property alias showGridH: mainWindow.showGridH
+        property alias showGridV: mainWindow.showGridV
     }
 }

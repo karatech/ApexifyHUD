@@ -20,6 +20,8 @@ namespace ApexifyHUD::Views::Telemetry
         Q_PROPERTY(bool showThrottle READ showThrottle WRITE setShowThrottle NOTIFY showThrottleChanged)
         Q_PROPERTY(bool showBrake READ showBrake WRITE setShowBrake NOTIFY showBrakeChanged)
         Q_PROPERTY(bool showAbs READ showAbs WRITE setShowAbs NOTIFY showAbsChanged)
+        Q_PROPERTY(bool showGridH READ showGridH WRITE setShowGridH NOTIFY showGridHChanged)
+        Q_PROPERTY(bool showGridV READ showGridV WRITE setShowGridV NOTIFY showGridVChanged)
 
     public:
         CustomChartControl(QQuickItem* parent = nullptr);
@@ -45,6 +47,12 @@ namespace ApexifyHUD::Views::Telemetry
         bool showAbs() const { return m_showAbs; }
         void setShowAbs(bool show);
 
+        bool showGridH() const { return m_showGridH; }
+        void setShowGridH(bool show);
+
+        bool showGridV() const { return m_showGridV; }
+        void setShowGridV(bool show);
+
         Q_INVOKABLE void appendData(float throttle, float brake, bool abs);
 
     signals:
@@ -55,11 +63,15 @@ namespace ApexifyHUD::Views::Telemetry
         void showThrottleChanged();
         void showBrakeChanged();
         void showAbsChanged();
+        void showGridHChanged();
+        void showGridVChanged();
 
     protected:
         void paint(QPainter* painter) override;
 
     private:
+        void paintGrid(QPainter* painter, float w, float topPad, float chartH, float drawH) const;
+
         QVector<float> m_throttleData;
         QVector<float> m_brakeData;
         QVector<float> m_absData;
@@ -72,6 +84,13 @@ namespace ApexifyHUD::Views::Telemetry
         bool m_showThrottle = true;
         bool m_showBrake = true;
         bool m_showAbs = true;
+        bool m_showGridH = true;
+        bool m_showGridV = true;
+
+        // Grid / guide styling
+        static constexpr QColor kGuideColor  = QColor(119, 119, 119, 75);
+        static constexpr int    kGridHLines  = 3;   // inner horizontal lines (25%, 50%, 75%)
+        static constexpr int    kGridVLines  = 5;   // inner vertical lines
 
         // Peak detection — 2 s before + 2 s after at ~60 Hz
         static constexpr int kHalfWindow = 85;

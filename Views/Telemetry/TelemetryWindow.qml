@@ -13,6 +13,8 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
     property alias showThrottle: telemetryChart.showThrottle
     property alias showBrake: telemetryChart.showBrake
     property alias showAbs: telemetryChart.showAbs
+    property alias showGridH: telemetryChart.showGridH
+    property alias showGridV: telemetryChart.showGridV
 
     function clampOpacity(v) { return Math.min(1.0, Math.max(0.4, v)); }
 

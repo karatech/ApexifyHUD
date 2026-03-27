@@ -67,6 +67,22 @@ void CustomChartControl::setShowAbs(bool show) {
     }
 }
 
+void CustomChartControl::setShowGridH(bool show) {
+    if (m_showGridH != show) {
+        m_showGridH = show;
+        emit showGridHChanged();
+        update();
+    }
+}
+
+void CustomChartControl::setShowGridV(bool show) {
+    if (m_showGridV != show) {
+        m_showGridV = show;
+        emit showGridVChanged();
+        update();
+    }
+}
+
 void CustomChartControl::appendData(float throttle, float brake, bool abs) {
     m_throttleData.append(throttle);
     m_brakeData.append(brake);
@@ -114,6 +130,45 @@ void CustomChartControl::appendData(float throttle, float brake, bool abs) {
     update();
 }
 
+void CustomChartControl::paintGrid(QPainter *painter, float w, float topPad, float chartH, float drawH) const {
+    // solid boundary lines (0 % and 100 %) — always drawn
+    QPen guidePen(kGuideColor, 1);
+    painter->setPen(guidePen);
+    painter->drawLine(QLineF(0, topPad, w, topPad));       // 100 %
+    painter->drawLine(QLineF(0, chartH, w, chartH));       // 0 %
+
+    // inner grid (same colour, thinner)
+    QPen gridPen(kGuideColor, 0.6, Qt::SolidLine);
+    painter->setPen(gridPen);
+
+    // horizontal lines — 3 evenly spaced (25 %, 50 %, 75 %)
+    if (m_showGridH) {
+        for (int i = 1; i <= kGridHLines; ++i) {
+            const float y = topPad + drawH - (i / static_cast<float>(kGridHLines + 1) * drawH);
+            painter->drawLine(QLineF(0, y, w, y));
+        }
+    }
+
+    // vertical lines — anchored to sample indices so they scroll with the data
+    if (m_showGridV) {
+        const float dx = w / static_cast<float>(m_maxPoints - 1);
+        const int gridSpacing = m_maxPoints / (kGridVLines + 1);
+        const int firstVisible = m_globalSampleCount - m_throttleData.size();
+
+        // first grid line at or after the left edge
+        const int firstLine = ((firstVisible / gridSpacing) + 1) * gridSpacing;
+
+        // scan across the full viewport, not just the current data extent
+        const int lastVisible = firstVisible + m_maxPoints - 1;
+
+        for (int g = firstLine; g <= lastVisible; g += gridSpacing) {
+            const float x = (g - firstVisible) * dx;
+            if (x > 0.0f && x < w)
+                painter->drawLine(QLineF(x, topPad, x, chartH));
+        }
+    }
+}
+
 void CustomChartControl::paint(QPainter *painter) {
     painter->setRenderHint(QPainter::Antialiasing);
 
@@ -123,13 +178,9 @@ void CustomChartControl::paint(QPainter *painter) {
     const float topPad     = 3.0f;
     const float annotationH = 16.0f;
     const float chartH = h - annotationH;
-
-    QPen guidePen(QColor(119, 119, 119, 75), 1);
-    painter->setPen(guidePen);
-    painter->drawLine(QLineF(0, topPad, w, topPad));       // 100 %
-    painter->drawLine(QLineF(0, chartH, w, chartH));       // 0 %
-
     const float drawH = chartH - topPad;  // usable height between the two guides
+
+    paintGrid(painter, w, topPad, chartH, drawH);
 
     auto drawLine = [painter, w, topPad, drawH, this](const QVector<float> &data, const QColor &color) {
         if (data.isEmpty()) return;
