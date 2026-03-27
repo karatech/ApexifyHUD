@@ -475,6 +475,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
                             if (telemetryWinLoader.item) {
                                 telemetryWinLoader.item.width = 250
                                 telemetryWinLoader.item.height = 100
+                                telemetryWinLoader.item.opacity = 0.9
                             }
                         }
                     }
