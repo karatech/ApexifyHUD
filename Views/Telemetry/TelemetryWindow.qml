@@ -15,6 +15,8 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
     property alias showAbs: telemetryChart.showAbs
     property alias showGridH: telemetryChart.showGridH
     property alias showGridV: telemetryChart.showGridV
+    property alias showPeaks: telemetryChart.showPeaks
+    property alias showValues: telemetryChart.showValues
 
     function clampOpacity(v) { return Math.min(1.0, Math.max(0.4, v)); }
 

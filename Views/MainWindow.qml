@@ -20,6 +20,8 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     property bool showAbs: true
     property bool showGridH: true
     property bool showGridV: true
+    property bool showValues: true
+    property bool showPeaks: true
 
     component CustomCheckBox : Controls.CheckBox {
         id: control
@@ -224,6 +226,42 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
 
             Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
 
+            Controls.Label { text: "Labels"; color: "#999"; font.pixelSize: 10; font.bold: true }
+
+            Controls.CheckBox { id: chkValues; text: "Values"; checked: mainWindow.showValues
+                padding: 0; topPadding: 2; bottomPadding: 2
+                onCheckedChanged: mainWindow.showValues = checked
+                contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
+                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                }
+                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                    y: (parent.height - height) / 2; radius: 2
+                    border.width: 1; border.color: chkValues.checked ? "#777" : "#888"
+                    color: chkValues.checked ? "#777" : "transparent"
+                    Text { anchors.centerIn: parent; text: "✓"; visible: chkValues.checked
+                        font.pixelSize: 9; color: "#FFFFFF"
+                    }
+                }
+            }
+
+            Controls.CheckBox { id: chkPeaks; text: "Brake peaks"; checked: mainWindow.showPeaks
+                padding: 0; topPadding: 2; bottomPadding: 2
+                onCheckedChanged: mainWindow.showPeaks = checked
+                contentItem: Text { text: parent.text; color: "#AAAAAA"; font.pixelSize: 12
+                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                }
+                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                    y: (parent.height - height) / 2; radius: 2
+                    border.width: 1; border.color: chkPeaks.checked ? "#777" : "#888"
+                    color: chkPeaks.checked ? "#777" : "transparent"
+                    Text { anchors.centerIn: parent; text: "✓"; visible: chkPeaks.checked
+                        font.pixelSize: 9; color: "#FFFFFF"
+                    }
+                }
+            }
+
+            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+
             Controls.Label { text: "Grid"; color: "#999"; font.pixelSize: 10; font.bold: true }
 
             Controls.CheckBox { id: chkGridH; text: "Horizontal"; checked: mainWindow.showGridH
@@ -266,6 +304,8 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     Binding { target: telemetryWinLoader.item; property: "showAbs";      value: mainWindow.showAbs;      when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "showGridH";    value: mainWindow.showGridH;    when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "showGridV";    value: mainWindow.showGridV;    when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showValues";   value: mainWindow.showValues;   when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showPeaks";    value: mainWindow.showPeaks;    when: telemetryWinLoader.item }
 
     Loader { id: telemetryWinLoader
         active: telemetryGraphCheck.checked
@@ -301,5 +341,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
         property alias showAbs: mainWindow.showAbs
         property alias showGridH: mainWindow.showGridH
         property alias showGridV: mainWindow.showGridV
+        property alias showValues: mainWindow.showValues
+        property alias showPeaks: mainWindow.showPeaks
     }
 }

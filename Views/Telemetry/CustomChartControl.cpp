@@ -83,6 +83,14 @@ void CustomChartControl::setShowGridV(bool show) {
     }
 }
 
+void CustomChartControl::setShowPeaks(bool show) {
+    if (m_showPeaks != show) {
+        m_showPeaks = show;
+        emit showPeaksChanged();
+        update();
+    }
+}
+
 void CustomChartControl::appendData(float throttle, float brake, bool abs) {
     m_throttleData.append(throttle);
     m_brakeData.append(brake);
@@ -176,7 +184,7 @@ void CustomChartControl::paint(QPainter *painter) {
     const float h = height();
 
     const float topPad     = 3.0f;
-    const float annotationH = 16.0f;
+    const float annotationH = m_showPeaks ? 16.0f : 0.0f;
     const float chartH = h - annotationH;
     const float drawH = chartH - topPad;  // usable height between the two guides
 
@@ -220,7 +228,7 @@ void CustomChartControl::paint(QPainter *painter) {
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
 
     // --- peak annotations ---
-    if (m_showBrake && !m_peakAnnotations.isEmpty() && !m_brakeData.isEmpty()) {
+    if (m_showPeaks && m_showBrake && !m_peakAnnotations.isEmpty() && !m_brakeData.isEmpty()) {
         const float dx = w / static_cast<float>(m_maxPoints - 1);
         const int firstVisible = m_globalSampleCount - m_brakeData.size();
 

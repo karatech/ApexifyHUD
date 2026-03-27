@@ -22,6 +22,7 @@ namespace ApexifyHUD::Views::Telemetry
         Q_PROPERTY(bool showAbs READ showAbs WRITE setShowAbs NOTIFY showAbsChanged)
         Q_PROPERTY(bool showGridH READ showGridH WRITE setShowGridH NOTIFY showGridHChanged)
         Q_PROPERTY(bool showGridV READ showGridV WRITE setShowGridV NOTIFY showGridVChanged)
+        Q_PROPERTY(bool showPeaks READ showPeaks WRITE setShowPeaks NOTIFY showPeaksChanged)
 
     public:
         CustomChartControl(QQuickItem* parent = nullptr);
@@ -53,6 +54,9 @@ namespace ApexifyHUD::Views::Telemetry
         bool showGridV() const { return m_showGridV; }
         void setShowGridV(bool show);
 
+        bool showPeaks() const { return m_showPeaks; }
+        void setShowPeaks(bool show);
+
         Q_INVOKABLE void appendData(float throttle, float brake, bool abs);
 
     signals:
@@ -65,6 +69,7 @@ namespace ApexifyHUD::Views::Telemetry
         void showAbsChanged();
         void showGridHChanged();
         void showGridVChanged();
+        void showPeaksChanged();
 
     protected:
         void paint(QPainter* painter) override;
@@ -86,6 +91,7 @@ namespace ApexifyHUD::Views::Telemetry
         bool m_showAbs = true;
         bool m_showGridH = true;
         bool m_showGridV = true;
+        bool m_showPeaks = true;
 
         // Grid / guide styling
         static constexpr QColor kGuideColor  = QColor(119, 119, 119, 75);
