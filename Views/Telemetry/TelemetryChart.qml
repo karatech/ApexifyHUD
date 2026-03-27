@@ -15,17 +15,20 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
     property alias showGridV: fastChart.showGridV
     property alias showPeaks: fastChart.showPeaks
     property bool showValues: true
+    property alias throttleColor: fastChart.throttleColor
+    property alias brakeColor: fastChart.brakeColor
+    property alias absColor: fastChart.absColor
 
     CustomChartControl { id: fastChart; anchors.fill: parent; anchors.margins: 3;
         anchors.leftMargin: telemetryChart.showValues ? 37 : 3
-        throttleColor: "#00FF00"; brakeColor: "#FF0000"; absColor: "#0000BB"; maxPoints: 500
+        maxPoints: 500
     }
 
-    Text { id: throttleValue; text: currentThrottle; color: "#00FF00"; font.pixelSize: 14; font.bold: true
+    Text { id: throttleValue; text: currentThrottle; color: telemetryChart.throttleColor; font.pixelSize: 14; font.bold: true
         visible: telemetryChart.showValues
         anchors.top: fastChart.top; anchors.topMargin: -7; anchors.left: parent.left; anchors.leftMargin: 7;
     }
-    Text { id: brakeValue; text: currentBrake; color: "#FF0000"; font.pixelSize: 14; font.bold: true
+    Text { id: brakeValue; text: currentBrake; color: telemetryChart.brakeColor; font.pixelSize: 14; font.bold: true
         visible: telemetryChart.showValues
         anchors.bottom: fastChart.bottom; anchors.bottomMargin: 7; anchors.left: parent.left; anchors.leftMargin: 7;
     }

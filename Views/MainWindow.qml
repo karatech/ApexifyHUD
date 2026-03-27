@@ -22,6 +22,9 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     property bool showGridV: true
     property bool showValues: true
     property bool showPeaks: true
+    property color throttleColor: "#00FF00"
+    property color brakeColor: "#FF0000"
+    property color absColor: "#5555FF"
 
     component CustomCheckBox : Controls.CheckBox {
         id: control
@@ -63,6 +66,136 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
             text: control.text; color: "white"; font: control.font; verticalAlignment: Text.AlignVCenter
             leftPadding: control.indicator.width + control.spacing; elide: Text.ElideRight
         }
+    }
+
+    // --- Inline HSV gradient color picker popup ---
+    component ColorPickerPopup : Controls.Popup {
+        id: picker
+        property color currentColor
+        signal colorPicked(color c)
+
+        property real pickerHue: 0
+        property real pickerSat: 1
+        property real pickerVal: 1
+        readonly property color liveColor: Qt.hsva(pickerHue, pickerSat, pickerVal, 1)
+
+        width: 186; padding: 6
+        background: Rectangle { radius: 6; color: "#EE1E1E1E"; border.color: "#555"; border.width: 1 }
+
+        ColumnLayout { spacing: 6
+
+            // --- Saturation / Value plane ---
+            Item { id: svArea; width: 170; height: 130
+                Rectangle { anchors.fill: parent; radius: 3
+                    color: Qt.hsva(picker.pickerHue, 1, 1, 1)
+                }
+                Rectangle { anchors.fill: parent; radius: 3
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0; color: "#FFFFFFFF" }
+                        GradientStop { position: 1; color: "#00FFFFFF" }
+                    }
+                }
+                Rectangle { anchors.fill: parent; radius: 3
+                    gradient: Gradient {
+                        orientation: Gradient.Vertical
+                        GradientStop { position: 0; color: "#00000000" }
+                        GradientStop { position: 1; color: "#FF000000" }
+                    }
+                }
+
+                // Crosshair
+                Rectangle {
+                    x: picker.pickerSat * svArea.width - 6
+                    y: (1 - picker.pickerVal) * svArea.height - 6
+                    width: 12; height: 12; radius: 6
+                    color: "transparent"
+                    border.width: 2; border.color: "white"
+                    Rectangle { anchors.centerIn: parent
+                        width: 10; height: 10; radius: 5
+                        color: "transparent"
+                        border.width: 1; border.color: "black"
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent; cursorShape: Qt.CrossCursor
+                    function pick(mouse) {
+                        picker.pickerSat = Math.max(0, Math.min(1, mouse.x / width))
+                        picker.pickerVal = Math.max(0, Math.min(1, 1 - mouse.y / height))
+                    }
+                    onPressed: (mouse) => pick(mouse)
+                    onPositionChanged: (mouse) => { if (pressed) pick(mouse) }
+                }
+            }
+
+            // --- Hue bar ---
+            Item { id: hueArea; width: 170; height: 14
+                Rectangle { anchors.fill: parent; radius: 3
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.000; color: Qt.hsva(0,     1, 1, 1) }
+                        GradientStop { position: 0.167; color: Qt.hsva(0.167, 1, 1, 1) }
+                        GradientStop { position: 0.333; color: Qt.hsva(0.333, 1, 1, 1) }
+                        GradientStop { position: 0.500; color: Qt.hsva(0.5,   1, 1, 1) }
+                        GradientStop { position: 0.667; color: Qt.hsva(0.667, 1, 1, 1) }
+                        GradientStop { position: 0.833; color: Qt.hsva(0.833, 1, 1, 1) }
+                        GradientStop { position: 1.000; color: Qt.hsva(1,     1, 1, 1) }
+                    }
+                }
+                // Hue indicator
+                Rectangle {
+                    x: picker.pickerHue * hueArea.width - 3; y: -1
+                    width: 6; height: hueArea.height + 2; radius: 2
+                    color: "transparent"
+                    border.width: 2; border.color: "white"
+                }
+                MouseArea {
+                    anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                    function pick(mouse) {
+                        picker.pickerHue = Math.max(0, Math.min(0.9999, mouse.x / width))
+                    }
+                    onPressed: (mouse) => pick(mouse)
+                    onPositionChanged: (mouse) => { if (pressed) pick(mouse) }
+                }
+            }
+
+            // --- Preview + Confirm ---
+            RowLayout { spacing: 4; Layout.alignment: Qt.AlignHCenter
+                Rectangle { width: 18; height: 18; radius: 3; color: picker.liveColor
+                    border.width: 1; border.color: "#888"
+                }
+                Rectangle { width: 18; height: 18; radius: 3; color: "#444"; border.width: 1; border.color: "#555"
+                    Text { anchors.centerIn: parent; text: "✓"; color: "#CCCCCC"; font.pixelSize: 11 }
+                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            picker.colorPicked(picker.liveColor)
+                            picker.close()
+                        }
+                    }
+                }
+            }
+        }
+
+        onAboutToShow: {
+            var c = currentColor
+            pickerHue = c.hsvHue >= 0 ? c.hsvHue : 0
+            pickerSat = c.hsvSaturation
+            pickerVal = c.hsvValue
+        }
+    }
+
+    ColorPickerPopup { id: throttleColorPicker; currentColor: mainWindow.throttleColor
+        x: settingsPopup.x + settingsPopup.width + 2; y: settingsPopup.y
+        onColorPicked: (c) => { mainWindow.throttleColor = c }
+    }
+    ColorPickerPopup { id: brakeColorPicker; currentColor: mainWindow.brakeColor
+        x: settingsPopup.x + settingsPopup.width + 2; y: settingsPopup.y
+        onColorPicked: (c) => { mainWindow.brakeColor = c }
+    }
+    ColorPickerPopup { id: absColorPicker; currentColor: mainWindow.absColor
+        x: settingsPopup.x + settingsPopup.width + 2; y: settingsPopup.y
+        onColorPicked: (c) => { mainWindow.absColor = c }
     }
 
     FolderListModel { id: ibtFilesModel
@@ -176,50 +309,74 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
 
             Controls.Label { text: "Traces"; color: "#999"; font.pixelSize: 10; font.bold: true }
 
-            Controls.CheckBox { id: chkThrottle; text: "Throttle"; checked: mainWindow.showThrottle
-                padding: 0; topPadding: 2; bottomPadding: 2
-                onCheckedChanged: mainWindow.showThrottle = checked
-                contentItem: Text { text: parent.text; color: "#00FF00"; font.pixelSize: 12
-                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+            RowLayout { spacing: 4; Layout.fillWidth: true
+                Controls.CheckBox { id: chkThrottle; text: "Throttle"; checked: mainWindow.showThrottle
+                    padding: 0; topPadding: 2; bottomPadding: 2; Layout.fillWidth: true
+                    onCheckedChanged: mainWindow.showThrottle = checked
+                    contentItem: Text { text: parent.text; color: mainWindow.throttleColor; font.pixelSize: 12
+                        leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                    }
+                    indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                        y: (parent.height - height) / 2; radius: 2
+                        border.width: 1; border.color: chkThrottle.checked ? mainWindow.throttleColor : "#888"
+                        color: chkThrottle.checked ? mainWindow.throttleColor : "transparent"
+                        Text { anchors.centerIn: parent; text: "✓"; visible: chkThrottle.checked
+                            font.pixelSize: 9; color: "#000000"
+                        }
+                    }
                 }
-                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
-                    y: (parent.height - height) / 2; radius: 2
-                    border.width: 1; border.color: chkThrottle.checked ? "#00FF00" : "#888"
-                    color: chkThrottle.checked ? "#00FF00" : "transparent"
-                    Text { anchors.centerIn: parent; text: "✓"; visible: chkThrottle.checked
-                        font.pixelSize: 9; color: "#000000"
+                Rectangle { width: 14; height: 14; radius: 3; color: mainWindow.throttleColor
+                    border.width: 1; border.color: "#888"
+                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                        onClicked: throttleColorPicker.visible ? throttleColorPicker.close() : throttleColorPicker.open()
                     }
                 }
             }
 
-            Controls.CheckBox { id: chkBrake; text: "Brake"; checked: mainWindow.showBrake
-                padding: 0; topPadding: 2; bottomPadding: 2
-                onCheckedChanged: mainWindow.showBrake = checked
-                contentItem: Text { text: parent.text; color: "#FF0000"; font.pixelSize: 12
-                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+            RowLayout { spacing: 4; Layout.fillWidth: true
+                Controls.CheckBox { id: chkBrake; text: "Brake"; checked: mainWindow.showBrake
+                    padding: 0; topPadding: 2; bottomPadding: 2; Layout.fillWidth: true
+                    onCheckedChanged: mainWindow.showBrake = checked
+                    contentItem: Text { text: parent.text; color: mainWindow.brakeColor; font.pixelSize: 12
+                        leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                    }
+                    indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                        y: (parent.height - height) / 2; radius: 2
+                        border.width: 1; border.color: chkBrake.checked ? mainWindow.brakeColor : "#888"
+                        color: chkBrake.checked ? mainWindow.brakeColor : "transparent"
+                        Text { anchors.centerIn: parent; text: "✓"; visible: chkBrake.checked
+                            font.pixelSize: 9; color: "#FFFFFF"
+                        }
+                    }
                 }
-                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
-                    y: (parent.height - height) / 2; radius: 2
-                    border.width: 1; border.color: chkBrake.checked ? "#FF0000" : "#888"
-                    color: chkBrake.checked ? "#FF0000" : "transparent"
-                    Text { anchors.centerIn: parent; text: "✓"; visible: chkBrake.checked
-                        font.pixelSize: 9; color: "#FFFFFF"
+                Rectangle { width: 14; height: 14; radius: 3; color: mainWindow.brakeColor
+                    border.width: 1; border.color: "#888"
+                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                        onClicked: brakeColorPicker.visible ? brakeColorPicker.close() : brakeColorPicker.open()
                     }
                 }
             }
 
-            Controls.CheckBox { id: chkAbs; text: "ABS"; checked: mainWindow.showAbs
-                padding: 0; topPadding: 2; bottomPadding: 2
-                onCheckedChanged: mainWindow.showAbs = checked
-                contentItem: Text { text: parent.text; color: "#5555FF"; font.pixelSize: 12
-                    leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+            RowLayout { spacing: 4; Layout.fillWidth: true
+                Controls.CheckBox { id: chkAbs; text: "ABS"; checked: mainWindow.showAbs
+                    padding: 0; topPadding: 2; bottomPadding: 2; Layout.fillWidth: true
+                    onCheckedChanged: mainWindow.showAbs = checked
+                    contentItem: Text { text: parent.text; color: mainWindow.absColor; font.pixelSize: 12
+                        leftPadding: parent.indicator.width + 6; verticalAlignment: Text.AlignVCenter
+                    }
+                    indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
+                        y: (parent.height - height) / 2; radius: 2
+                        border.width: 1; border.color: chkAbs.checked ? mainWindow.absColor : "#888"
+                        color: chkAbs.checked ? mainWindow.absColor : "transparent"
+                        Text { anchors.centerIn: parent; text: "✓"; visible: chkAbs.checked
+                            font.pixelSize: 9; color: "#FFFFFF"
+                        }
+                    }
                 }
-                indicator: Rectangle { implicitWidth: 13; implicitHeight: 13; x: 0
-                    y: (parent.height - height) / 2; radius: 2
-                    border.width: 1; border.color: chkAbs.checked ? "#5555FF" : "#888"
-                    color: chkAbs.checked ? "#5555FF" : "transparent"
-                    Text { anchors.centerIn: parent; text: "✓"; visible: chkAbs.checked
-                        font.pixelSize: 9; color: "#FFFFFF"
+                Rectangle { width: 14; height: 14; radius: 3; color: mainWindow.absColor
+                    border.width: 1; border.color: "#888"
+                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                        onClicked: absColorPicker.visible ? absColorPicker.close() : absColorPicker.open()
                     }
                 }
             }
@@ -295,17 +452,40 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
                     }
                 }
             }
+
+            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+
+            Rectangle { width: parent.width; height: 18; radius: 3; color: resetArea.containsMouse ? "#333" : "transparent"
+                Text { anchors.centerIn: parent; text: "Reset"; color: "#999"; font.pixelSize: 10 }
+                MouseArea { id: resetArea; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true
+                    onClicked: {
+                        mainWindow.showThrottle = true
+                        mainWindow.showBrake = true
+                        mainWindow.showAbs = true
+                        mainWindow.showGridH = false
+                        mainWindow.showGridV = false
+                        mainWindow.showValues = false
+                        mainWindow.showPeaks = true
+                        mainWindow.throttleColor = "#00FF00"
+                        mainWindow.brakeColor = "#FF0000"
+                        mainWindow.absColor = "#5555FF"
+                    }
+                }
+            }
         }
     }
 
     // Push settings down to the loaded telemetry window
-    Binding { target: telemetryWinLoader.item; property: "showThrottle"; value: mainWindow.showThrottle; when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showBrake";    value: mainWindow.showBrake;    when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showAbs";      value: mainWindow.showAbs;      when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showGridH";    value: mainWindow.showGridH;    when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showGridV";    value: mainWindow.showGridV;    when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showValues";   value: mainWindow.showValues;   when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showPeaks";    value: mainWindow.showPeaks;    when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showThrottle";  value: mainWindow.showThrottle;  when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showBrake";     value: mainWindow.showBrake;     when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showAbs";       value: mainWindow.showAbs;       when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showGridH";     value: mainWindow.showGridH;     when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showGridV";     value: mainWindow.showGridV;     when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showValues";    value: mainWindow.showValues;    when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showPeaks";     value: mainWindow.showPeaks;     when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "throttleColor"; value: mainWindow.throttleColor; when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "brakeColor";    value: mainWindow.brakeColor;    when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "absColor";      value: mainWindow.absColor;      when: telemetryWinLoader.item }
 
     Loader { id: telemetryWinLoader
         active: telemetryGraphCheck.checked
@@ -343,5 +523,8 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
         property alias showGridV: mainWindow.showGridV
         property alias showValues: mainWindow.showValues
         property alias showPeaks: mainWindow.showPeaks
+        property alias throttleColor: mainWindow.throttleColor
+        property alias brakeColor: mainWindow.brakeColor
+        property alias absColor: mainWindow.absColor
     }
 }

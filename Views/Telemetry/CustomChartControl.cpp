@@ -246,9 +246,7 @@ void CustomChartControl::paint(QPainter *painter) {
             const float x = localIdx * dx;
             const QString text = QString::number(peak.value);
             const float textW = fm.horizontalAdvance(text);
-            painter->setOpacity(0.43);
             painter->drawText(QPointF(x - textW * 0.5f, chartH + 15.0f), text);
-            painter->setOpacity(1.0);
         }
     }
 }
