@@ -55,7 +55,7 @@ namespace ApexifyHUD::Views::Telemetry
         int m_maxPoints = 500;
 
         // Peak detection — 2 s before + 2 s after at ~60 Hz
-        static constexpr int kHalfWindow = 125;
+        static constexpr int kHalfWindow = 85;
         static constexpr float kMinBrake  = 10.0f;   // ignore trivial taps
         int m_globalSampleCount = 0;
         QVector<BrakePeakAnnotation> m_peakAnnotations;

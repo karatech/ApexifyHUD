@@ -138,9 +138,11 @@ void CustomChartControl::paint(QPainter *painter) {
         painter->drawPolyline(polygon);
     };
 
+    painter->setCompositionMode(QPainter::CompositionMode_Plus);
     drawLine(m_throttleData, m_throttleColor);
     drawLine(m_brakeData,    m_brakeColor);
     drawLine(m_absData,      m_absColor);
+    painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
 
     // --- peak annotations ---
     if (!m_peakAnnotations.isEmpty() && !m_brakeData.isEmpty()) {
