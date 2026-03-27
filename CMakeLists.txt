@@ -33,7 +33,8 @@ qt_add_qml_module(${APP_TARGET} URI ${APP_TARGET} VERSION 1.0
     QML_FILES
         Views/MainWindow.qml
         Views/Telemetry/TelemetryWindow.qml
-        Views/Telemetry/TelemetryChart.qml)
+        Views/Telemetry/TelemetryChart.qml
+        Views/Telemetry/TelemetrySettingsPopup.qml)
 
 target_include_directories(${APP_TARGET} PRIVATE "third_party/irsdk 1.18/irsdk")
 
