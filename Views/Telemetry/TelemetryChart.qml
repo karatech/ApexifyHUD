@@ -14,6 +14,7 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
     property alias showGridH: fastChart.showGridH
     property alias showGridV: fastChart.showGridV
     property alias showPeaks: fastChart.showPeaks
+    property alias lineThickness: fastChart.lineThickness
     property bool showValues: true
     property alias throttleColor: fastChart.throttleColor
     property alias brakeColor: fastChart.brakeColor
@@ -30,7 +31,7 @@ Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } 
     }
     Text { id: brakeValue; text: currentBrake; color: telemetryChart.brakeColor; font.pixelSize: 14; font.bold: true
         visible: telemetryChart.showValues
-        anchors.bottom: fastChart.bottom; anchors.bottomMargin: 7; anchors.left: parent.left; anchors.leftMargin: 7;
+        anchors.bottom: fastChart.bottom; anchors.bottomMargin: (fastChart.showPeaks ? 13 : 0) - 6; anchors.left: parent.left; anchors.leftMargin: 7;
     }
 
     Connections {

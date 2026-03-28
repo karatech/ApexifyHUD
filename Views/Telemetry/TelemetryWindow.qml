@@ -16,6 +16,7 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
     property alias showGridH: telemetryChart.showGridH
     property alias showGridV: telemetryChart.showGridV
     property alias showPeaks: telemetryChart.showPeaks
+    property alias lineThickness: telemetryChart.lineThickness
     property alias showValues: telemetryChart.showValues
     property alias throttleColor: telemetryChart.throttleColor
     property alias brakeColor: telemetryChart.brakeColor

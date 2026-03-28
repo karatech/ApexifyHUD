@@ -72,6 +72,24 @@ Controls.Popup {
                 }
             }
 
+            ColumnLayout { Layout.fillWidth: true; Layout.bottomMargin: 10
+                Controls.Label { text: "Thickness"; color: "#999"; font.pixelSize: 12; Layout.alignment: Qt.AlignHCenter }
+                Controls.Slider { id: thicknessSlider; from: 0.2; to: 3.0; stepSize: 0.1
+                    value: settings.lineThickness; Layout.fillWidth: true
+                    implicitHeight: 6
+                    onMoved: settings.lineThickness = value
+                    background: Rectangle { x: thicknessSlider.leftPadding; width: thicknessSlider.availableWidth
+                        y: thicknessSlider.topPadding + thicknessSlider.availableHeight / 2 - height / 2
+                        implicitWidth: 120; implicitHeight: 2; radius: 1; color: "#444"
+                        Rectangle { width: thicknessSlider.visualPosition * parent.width; height: parent.height; radius: 1; color: "#7F3B2E" }
+                    }
+                    handle: Rectangle { x: thicknessSlider.leftPadding + thicknessSlider.visualPosition * (thicknessSlider.availableWidth - width)
+                        y: thicknessSlider.topPadding + thicknessSlider.availableHeight / 2 - height / 2
+                        implicitWidth: 10; implicitHeight: 10; radius: 5; color: "#CCCCCC"
+                    }
+                }
+            }
+
             Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 10; Layout.bottomMargin: 10 }
 
             Controls.Label { text: "Labels"; color: "#999"; font.pixelSize: 12; font.bold: true }
@@ -112,6 +130,7 @@ Controls.Popup {
                         settings.throttleColor = "#00FF00"
                         settings.brakeColor = "#FF0000"
                         settings.absColor = "#5555FF"
+                        settings.lineThickness = 1.2
                         settingsPopup.telemetryWindowResetRequested()
                     }
                 }

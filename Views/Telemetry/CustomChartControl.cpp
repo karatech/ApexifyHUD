@@ -91,6 +91,15 @@ void CustomChartControl::setShowPeaks(bool show) {
     }
 }
 
+void CustomChartControl::setLineThickness(qreal thickness) {
+    thickness = qBound(0.2, thickness, 3.0);
+    if (!qFuzzyCompare(m_lineThickness, thickness)) {
+        m_lineThickness = thickness;
+        emit lineThicknessChanged();
+        update();
+    }
+}
+
 void CustomChartControl::appendData(float throttle, float brake, bool abs) {
     m_throttleData.append(throttle);
     m_brakeData.append(brake);
@@ -138,12 +147,12 @@ void CustomChartControl::appendData(float throttle, float brake, bool abs) {
     update();
 }
 
-void CustomChartControl::paintGrid(QPainter *painter, float w, float topPad, float chartH, float drawH) const {
+void CustomChartControl::paintGrid(QPainter *painter, float w, float pad, float chartH, float drawH) const {
     // solid boundary lines (0 % and 100 %) — always drawn
     QPen guidePen(kGuideColor, 1);
     painter->setPen(guidePen);
-    painter->drawLine(QLineF(0, topPad, w, topPad));       // 100 %
-    painter->drawLine(QLineF(0, chartH, w, chartH));       // 0 %
+    painter->drawLine(QLineF(0, pad, w, pad));                     // 100 %
+    painter->drawLine(QLineF(0, chartH - pad, w, chartH - pad));   // 0 %
 
     // inner grid (same colour, thinner)
     QPen gridPen(kGuideColor, 0.6, Qt::SolidLine);
@@ -152,7 +161,7 @@ void CustomChartControl::paintGrid(QPainter *painter, float w, float topPad, flo
     // horizontal lines — 3 evenly spaced (25 %, 50 %, 75 %)
     if (m_showGridH) {
         for (int i = 1; i <= kGridHLines; ++i) {
-            const float y = topPad + drawH - (i / static_cast<float>(kGridHLines + 1) * drawH);
+            const float y = pad + drawH - (i / static_cast<float>(kGridHLines + 1) * drawH);
             painter->drawLine(QLineF(0, y, w, y));
         }
     }
@@ -172,7 +181,7 @@ void CustomChartControl::paintGrid(QPainter *painter, float w, float topPad, flo
         for (int g = firstLine; g <= lastVisible; g += gridSpacing) {
             const float x = (g - firstVisible) * dx;
             if (x > 0.0f && x < w)
-                painter->drawLine(QLineF(x, topPad, x, chartH));
+                painter->drawLine(QLineF(x, pad, x, chartH - pad));
         }
     }
 }
@@ -183,18 +192,18 @@ void CustomChartControl::paint(QPainter *painter) {
     const float w = width();
     const float h = height();
 
-    const float topPad     = 3.0f;
-    const float annotationH = m_showPeaks ? 16.0f : 0.0f;
+    const float pad        = 3.0f;
+    const float annotationH = m_showPeaks ? 13.0f : 0.0f;
     const float chartH = h - annotationH;
-    const float drawH = chartH - topPad;  // usable height between the two guides
+    const float drawH = chartH - 2 * pad;  // usable height between the two guides
 
-    paintGrid(painter, w, topPad, chartH, drawH);
+    paintGrid(painter, w, pad, chartH, drawH);
 
-    auto drawLine = [painter, w, topPad, drawH, this](const QVector<float> &data, const QColor &color) {
+    auto drawLine = [painter, w, pad, drawH, this](const QVector<float> &data, const QColor &color) {
         if (data.isEmpty()) return;
 
         QPen pen(color);
-        pen.setWidth(2);
+        pen.setWidthF(m_lineThickness);
         pen.setCapStyle(Qt::RoundCap);
         pen.setJoinStyle(Qt::RoundJoin);
         painter->setPen(pen);
@@ -205,7 +214,7 @@ void CustomChartControl::paint(QPainter *painter) {
         for (int i = 0; i < data.size(); ++i) {
             float x   = i * dx;
             float val = qBound(0.0f, data[i], 100.0f);
-            float y   = topPad + drawH - (val / 100.0f * drawH);
+            float y   = pad + drawH - (val / 100.0f * drawH);
 
             if (data[i] >= 0.0f)
             {
@@ -246,7 +255,7 @@ void CustomChartControl::paint(QPainter *painter) {
             const float x = localIdx * dx;
             const QString text = QString::number(peak.value);
             const float textW = fm.horizontalAdvance(text);
-            painter->drawText(QPointF(x - textW * 0.5f, chartH + 15.0f), text);
+            painter->drawText(QPointF(x - textW * 0.5f, chartH + 10.0f), text);
         }
     }
 }

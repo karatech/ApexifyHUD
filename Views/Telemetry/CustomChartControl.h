@@ -23,6 +23,7 @@ namespace ApexifyHUD::Views::Telemetry
         Q_PROPERTY(bool showGridH READ showGridH WRITE setShowGridH NOTIFY showGridHChanged)
         Q_PROPERTY(bool showGridV READ showGridV WRITE setShowGridV NOTIFY showGridVChanged)
         Q_PROPERTY(bool showPeaks READ showPeaks WRITE setShowPeaks NOTIFY showPeaksChanged)
+        Q_PROPERTY(qreal lineThickness READ lineThickness WRITE setLineThickness NOTIFY lineThicknessChanged)
 
     public:
         CustomChartControl(QQuickItem* parent = nullptr);
@@ -57,6 +58,9 @@ namespace ApexifyHUD::Views::Telemetry
         bool showPeaks() const { return m_showPeaks; }
         void setShowPeaks(bool show);
 
+        qreal lineThickness() const { return m_lineThickness; }
+        void setLineThickness(qreal thickness);
+
         Q_INVOKABLE void appendData(float throttle, float brake, bool abs);
 
     signals:
@@ -70,12 +74,13 @@ namespace ApexifyHUD::Views::Telemetry
         void showGridHChanged();
         void showGridVChanged();
         void showPeaksChanged();
+        void lineThicknessChanged();
 
     protected:
         void paint(QPainter* painter) override;
 
     private:
-        void paintGrid(QPainter* painter, float w, float topPad, float chartH, float drawH) const;
+        void paintGrid(QPainter* painter, float w, float pad, float chartH, float drawH) const;
 
         QVector<float> m_throttleData;
         QVector<float> m_brakeData;
@@ -92,6 +97,7 @@ namespace ApexifyHUD::Views::Telemetry
         bool m_showGridH = true;
         bool m_showGridV = true;
         bool m_showPeaks = true;
+        qreal m_lineThickness = 1.2;
 
         // Grid / guide styling
         static constexpr QColor kGuideColor  = QColor(119, 119, 119, 75);

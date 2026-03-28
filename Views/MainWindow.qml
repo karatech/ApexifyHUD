@@ -27,6 +27,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     property color throttleColor: "#00FF00"
     property color brakeColor: "#FF0000"
     property color absColor: "#5555FF"
+    property real lineThickness: 1.2
 
     FolderListModel { id: ibtFilesModel
         folder: ibtLogFolderUrl
@@ -152,6 +153,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     Binding { target: telemetryWinLoader.item; property: "throttleColor"; value: mainWindow.throttleColor; when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "brakeColor";    value: mainWindow.brakeColor;    when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "absColor";      value: mainWindow.absColor;      when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "lineThickness"; value: mainWindow.lineThickness; when: telemetryWinLoader.item }
 
     Loader { id: telemetryWinLoader
         active: telemetryGraphCheck.checked
@@ -192,5 +194,6 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
         property alias throttleColor: mainWindow.throttleColor
         property alias brakeColor: mainWindow.brakeColor
         property alias absColor: mainWindow.absColor
+        property alias lineThickness: mainWindow.lineThickness
     }
 }
