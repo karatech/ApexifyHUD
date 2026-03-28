@@ -3,7 +3,7 @@ import QtQuick 6.9
 import QtQuick.Controls 6.9
 import Qt.labs.settings 1.1
 
-Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; minimumHeight: 80
+Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; minimumHeight: 50
     flags: Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
     color: "transparent"
 

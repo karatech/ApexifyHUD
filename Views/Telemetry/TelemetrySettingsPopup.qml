@@ -12,26 +12,27 @@ Controls.Popup {
     padding: 6
     background: Rectangle { radius: 6; color: "#DD1E1E1E"; border.color: "#555555"; border.width: 1 }
 
+    function openPickerAt(picker, item, mouse) {
+        var pos = item.mapToItem(picker.parent, mouse.x, mouse.y)
+        picker.x = pos.x
+        picker.y = pos.y
+        picker.open()
+    }
+
     ColorPickerPopup { id: throttleColorPicker; currentColor: settings.throttleColor
-        x: settingsPopup.width + 2 - settingsPopup.leftPadding
-        y: -settingsPopup.topPadding
         onColorPicked: (c) => { settings.throttleColor = c }
     }
     ColorPickerPopup { id: brakeColorPicker; currentColor: settings.brakeColor
-        x: settingsPopup.width + 2 - settingsPopup.leftPadding
-        y: -settingsPopup.topPadding
         onColorPicked: (c) => { settings.brakeColor = c }
     }
     ColorPickerPopup { id: absColorPicker; currentColor: settings.absColor
-        x: settingsPopup.width + 2 - settingsPopup.leftPadding
-        y: -settingsPopup.topPadding
         onColorPicked: (c) => { settings.absColor = c }
     }
 
     RowLayout { spacing: 0
 
         // ---- Left: settings ----
-        ColumnLayout { spacing: 0; Layout.alignment: Qt.AlignTop; width: 160;
+        ColumnLayout { spacing: 0; Layout.alignment: Qt.AlignTop; width: 120; Layout.margins: 10
 
             Controls.Label { text: "Traces"; color: "#999"; font.pixelSize: 10; font.bold: true }
 
@@ -44,7 +45,7 @@ Controls.Popup {
                 Rectangle { width: 14; height: 14; radius: 3; color: settings.throttleColor
                     border.width: 1; border.color: "#888"
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: throttleColorPicker.visible ? throttleColorPicker.close() : throttleColorPicker.open()
+                        onClicked: (mouse) => throttleColorPicker.visible ? throttleColorPicker.close() : openPickerAt(throttleColorPicker, this, mouse)
                     }
                 }
             }
@@ -58,7 +59,7 @@ Controls.Popup {
                 Rectangle { width: 14; height: 14; radius: 3; color: settings.brakeColor
                     border.width: 1; border.color: "#888"
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: brakeColorPicker.visible ? brakeColorPicker.close() : brakeColorPicker.open()
+                        onClicked: (mouse) => brakeColorPicker.visible ? brakeColorPicker.close() : openPickerAt(brakeColorPicker, this, mouse)
                     }
                 }
             }
@@ -72,12 +73,12 @@ Controls.Popup {
                 Rectangle { width: 14; height: 14; radius: 3; color: settings.absColor
                     border.width: 1; border.color: "#888"
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: absColorPicker.visible ? absColorPicker.close() : absColorPicker.open()
+                        onClicked: (mouse) => absColorPicker.visible ? absColorPicker.close() : openPickerAt(absColorPicker, this, mouse)
                     }
                 }
             }
 
-            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 10; Layout.bottomMargin: 10 }
 
             Controls.Label { text: "Labels"; color: "#999"; font.pixelSize: 10; font.bold: true }
 
@@ -91,7 +92,7 @@ Controls.Popup {
                 onCheckedChanged: settings.showPeaks = checked
             }
 
-            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 10; Layout.bottomMargin: 10 }
 
             Controls.Label { text: "Grid"; color: "#999"; font.pixelSize: 10; font.bold: true }
 
@@ -105,7 +106,7 @@ Controls.Popup {
                 onCheckedChanged: settings.showGridV = checked
             }
 
-            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 2; Layout.bottomMargin: 2 }
+            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 10; Layout.bottomMargin: 10 }
 
             Rectangle { width: parent.width; height: 18; radius: 3; color: resetArea.containsMouse ? "#333" : "transparent"
                 Text { anchors.centerIn: parent; text: "Reset"; color: "#999"; font.pixelSize: 10 }
@@ -131,7 +132,7 @@ Controls.Popup {
         Rectangle { width: 1; Layout.fillHeight: true; color: "#444"; Layout.leftMargin: 6; Layout.rightMargin: 6 }
 
         // ---- Right: shortcuts info ----
-        ColumnLayout { spacing: 4; Layout.alignment: Qt.AlignTop; Layout.preferredWidth: 110
+        ColumnLayout { spacing: 4; Layout.alignment: Qt.AlignTop; Layout.preferredWidth: 80; Layout.margins: 10
 
             Controls.Label { text: "Shortcuts"; color: "#999"; font.pixelSize: 10; font.bold: true }
 

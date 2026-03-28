@@ -9,7 +9,7 @@ import "Controls"
 import "Telemetry" as Telemetry
 
 ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
-    width: 640; height: 800; visible: true
+    width: 640; height: 800; visible: true; minimumHeight: 500; minimumWidth: 470
 
     onClosing: Qt.quit()
 
