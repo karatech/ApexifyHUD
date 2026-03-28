@@ -1,8 +1,10 @@
 #include "CustomChartControl.h"
 #include <QPainter>
+#include <QPainterPath>
 #include <QPen>
 #include <QPointF>
 #include <QFontMetricsF>
+#include <cmath>
 
 using namespace ApexifyHUD::Views::Telemetry;
 
@@ -100,6 +102,14 @@ void CustomChartControl::setLineThickness(qreal thickness) {
     }
 }
 
+void CustomChartControl::setShowValues(bool show) {
+    if (m_showValues != show) {
+        m_showValues = show;
+        emit showValuesChanged();
+        update();
+    }
+}
+
 void CustomChartControl::appendData(float throttle, float brake, bool abs) {
     m_throttleData.append(throttle);
     m_brakeData.append(brake);
@@ -189,13 +199,19 @@ void CustomChartControl::paintGrid(QPainter *painter, float w, float pad, float 
 void CustomChartControl::paint(QPainter *painter) {
     painter->setRenderHint(QPainter::Antialiasing);
 
-    const float w = width();
+    const float totalW = width();
     const float h = height();
 
+    const float leftPad    = m_showValues ? 34.0f : 0.0f;
+    const float w          = totalW - leftPad;
     const float pad        = 3.0f;
     const float annotationH = m_showPeaks ? 13.0f : 0.0f;
     const float chartH = h - annotationH;
     const float drawH = chartH - 2 * pad;  // usable height between the two guides
+
+    // Offset all chart drawing to the right of the value labels
+    painter->save();
+    painter->translate(leftPad, 0);
 
     paintGrid(painter, w, pad, chartH, drawH);
 
@@ -244,9 +260,22 @@ void CustomChartControl::paint(QPainter *painter) {
         QFont font;
         font.setPixelSize(11);
         font.setBold(false);
-        painter->setFont(font);
-        painter->setPen(m_brakeColor);
         const QFontMetricsF fm(font);
+
+        const float textOpacity = m_lineThickness + 0.2;
+        const float peakStroke  = m_lineThickness * 0.3f;
+
+        painter->save();
+        painter->setOpacity(textOpacity);
+
+        QPen textPen(m_brakeColor);
+        textPen.setJoinStyle(Qt::RoundJoin);
+        if (peakStroke >= 0.5f)
+            textPen.setWidthF(peakStroke);
+        else
+            textPen.setStyle(Qt::NoPen);
+        painter->setPen(textPen);
+        painter->setBrush(m_brakeColor);
 
         for (const auto& peak : m_peakAnnotations) {
             const int localIdx = peak.globalIndex - firstVisible;
@@ -255,7 +284,57 @@ void CustomChartControl::paint(QPainter *painter) {
             const float x = localIdx * dx;
             const QString text = QString::number(peak.value);
             const float textW = fm.horizontalAdvance(text);
-            painter->drawText(QPointF(x - textW * 0.5f, chartH + 10.0f), text);
+
+            QPainterPath path;
+            path.addText(QPointF(x - textW * 0.5f, chartH + 10.0f), font, text);
+            painter->drawPath(path);
         }
+
+        painter->restore();
+    }
+
+    painter->restore();
+
+	// --- throttle / brake value labels (in the left margin) ---
+	if (m_showValues) {
+		QFont valFont;
+		valFont.setPixelSize(14);
+
+        const float valOpacity = m_lineThickness + 0.2;
+        const float textStroke = m_lineThickness * 0.3f;
+
+		painter->save();
+		painter->setOpacity(valOpacity);
+
+		QPen valPen;
+		valPen.setJoinStyle(Qt::RoundJoin);
+		if (textStroke >= 0.5f)
+			valPen.setWidthF(textStroke);
+		else
+			valPen.setStyle(Qt::NoPen);
+
+        if (m_showThrottle && !m_throttleData.isEmpty()) {
+            const int val = qBound(0, static_cast<int>(m_throttleData.last() + 0.5f), 100);
+            const QString text = QString::number(val);
+            valPen.setColor(m_throttleColor);
+            painter->setPen(valPen);
+            painter->setBrush(m_throttleColor);
+            QPainterPath path;
+            path.addText(QPointF(4, 12), valFont, text);
+            painter->drawPath(path);
+        }
+
+        if (m_showBrake && !m_brakeData.isEmpty()) {
+            const int val = qBound(0, static_cast<int>(m_brakeData.last() + 0.5f), 100);
+            const QString text = QString::number(val);
+            valPen.setColor(m_brakeColor);
+            painter->setPen(valPen);
+            painter->setBrush(m_brakeColor);
+            QPainterPath path;
+            path.addText(QPointF(4, chartH), valFont, text);
+            painter->drawPath(path);
+        }
+
+        painter->restore();
     }
 }
