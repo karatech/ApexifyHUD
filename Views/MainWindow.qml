@@ -40,7 +40,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
 
         RowLayout { Layout.fillWidth: true; spacing: 4
 
-            CustomCheckBox { id: telemetryGraphCheck
+            CustomCheckBox { id: telemetryGraphCheck; compact: false;
                 text: "Telemetry Graph"; enabled: true
                 onCheckedChanged: {
                     telemetryWinLoader.active = checked
@@ -102,7 +102,6 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
                 }
             }
         }
-
 
         RowLayout {
             width: parent.width; spacing: 8
