@@ -1,6 +1,7 @@
 import QtQuick.Controls.Material 2.15
 import QtQuick 6.9
 import QtQuick.Controls 6.9
+import QtQuick.Layouts 6.9
 import Qt.labs.settings 1.1
 
 Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; minimumHeight: 50
@@ -17,6 +18,7 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
     property alias showGridV: telemetryChart.showGridV
     property alias showPeaks: telemetryChart.showPeaks
     property alias showValues: telemetryChart.showValues
+    property alias showPedalInput: pedalInput.visible
     property alias lineThickness: telemetryChart.lineThickness
     property alias throttleColor: telemetryChart.throttleColor
     property alias brakeColor: telemetryChart.brakeColor
@@ -28,7 +30,40 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
 
     onOpacityChanged: windowSettings.opacity = clampOpacity(root.opacity)
 
-    TelemetryChart { id: telemetryChart; anchors.fill: parent }
+    Rectangle {
+        id: background
+        anchors.fill: parent
+        color: Material.background
+    }
+
+    RowLayout {
+        anchors.fill: parent
+        spacing: 0
+
+        TelemetryPedalInput {
+            id: pedalInput
+
+            Layout.fillHeight: true
+
+            throttleColor: root.throttleColor
+            brakeColor: root.brakeColor
+            absColor: root.absColor
+        }
+
+        Rectangle {
+            id: seperator
+            Layout.preferredWidth: 2
+            Layout.preferredHeight: parent.height * 0.9
+            color: "#444"
+        }
+
+        TelemetryChart {
+            id: telemetryChart
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+        }
+    }
+
 
     // drag anywhere to move the *window*
     MouseArea { anchors.fill: parent; acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton

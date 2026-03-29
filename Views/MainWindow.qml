@@ -24,6 +24,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     property bool showGridV: true
     property bool showValues: true
     property bool showPeaks: true
+    property bool showPedalInput: false
     property color throttleColor: "#00FF00"
     property color brakeColor: "#FF0000"
     property color absColor: "#5555FF"
@@ -150,6 +151,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     Binding { target: telemetryWinLoader.item; property: "showGridV";     value: mainWindow.showGridV;     when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "showValues";    value: mainWindow.showValues;    when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "showPeaks";     value: mainWindow.showPeaks;     when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showPedalInput";value: mainWindow.showPedalInput;when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "throttleColor"; value: mainWindow.throttleColor; when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "brakeColor";    value: mainWindow.brakeColor;    when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "absColor";      value: mainWindow.absColor;      when: telemetryWinLoader.item }
@@ -191,6 +193,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
         property alias showGridV: mainWindow.showGridV
         property alias showValues: mainWindow.showValues
         property alias showPeaks: mainWindow.showPeaks
+        property alias showPedalInput: mainWindow.showPedalInput
         property alias throttleColor: mainWindow.throttleColor
         property alias brakeColor: mainWindow.brakeColor
         property alias absColor: mainWindow.absColor

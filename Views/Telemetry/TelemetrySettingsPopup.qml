@@ -72,6 +72,10 @@ Controls.Popup {
                 }
             }
 
+            CustomCheckBox { text: "Pedal input"; checked: settings.showValues; compact: true
+                onCheckedChanged: settings.showPedalInput = checked
+            }
+
             ColumnLayout { Layout.fillWidth: true; Layout.bottomMargin: 10
                 Controls.Label { text: "Thickness"; color: "#999"; font.pixelSize: 12; Layout.alignment: Qt.AlignHCenter }
                 Controls.Slider { id: thicknessSlider; from: 0.2; to: 3.0; stepSize: 0.1
@@ -127,6 +131,7 @@ Controls.Popup {
                         settings.showGridV = false
                         settings.showValues = false
                         settings.showPeaks = true
+                        settings.showPedalInput = false
                         settings.throttleColor = "#00FF00"
                         settings.brakeColor = "#FF0000"
                         settings.absColor = "#5555FF"

@@ -2,7 +2,7 @@ import QtQuick 6.9
 import QtQuick.Controls.Material 2.15
 import App 1.0  // Imports our newly registered class
 
-Rectangle { id: telemetryChart; radius: 4; anchors { fill: parent; margins: 0 } clip: true
+Rectangle { id: telemetryChart; radius: 4; clip: true
     color: telemetryChart.Material.background
 
     property alias showThrottle: fastChart.showThrottle
