@@ -72,8 +72,17 @@ Controls.Popup {
                 }
             }
 
-            CustomCheckBox { text: "Pedal input"; checked: settings.showValues; compact: true
-                onCheckedChanged: settings.showPedalInput = checked
+            CustomCheckBox { text: "Throttle bar"; checked: settings.showThrottleBar; compact: true
+                onCheckedChanged: settings.showThrottleBar = checked
+            }
+
+            CustomCheckBox { text: "Brake bar"; checked: settings.showBrakeBar; compact: true
+                onCheckedChanged: settings.showBrakeBar = checked
+            }
+
+            CustomCheckBox { text: "Horizontal"; checked: settings.horizontalPedalInput; compact: true
+                enabled: settings.showThrottleBar || settings.showBrakeBar
+                onCheckedChanged: settings.horizontalPedalInput = checked
             }
 
             ColumnLayout { Layout.fillWidth: true; Layout.bottomMargin: 10
@@ -98,12 +107,12 @@ Controls.Popup {
 
             Controls.Label { text: "Labels"; color: "#999"; font.pixelSize: 12; font.bold: true }
 
-            CustomCheckBox { text: "Values"; checked: settings.showValues; compact: true
-                onCheckedChanged: settings.showValues = checked
-            }
-
             CustomCheckBox { text: "Brake peaks"; checked: settings.showPeaks; compact: true
                 onCheckedChanged: settings.showPeaks = checked
+            }
+
+            CustomCheckBox { text: "Pedal values"; checked: settings.showPedalValues; compact: true
+                onCheckedChanged: settings.showPedalValues = checked
             }
 
             Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 10; Layout.bottomMargin: 10 }
@@ -129,13 +138,15 @@ Controls.Popup {
                         settings.showAbs = true
                         settings.showGridH = false
                         settings.showGridV = false
-                        settings.showValues = false
                         settings.showPeaks = true
-                        settings.showPedalInput = false
+                        settings.horizontalPedalInput = false
+                        settings.showThrottleBar = true
+                        settings.showBrakeBar = true
+                        settings.showPedalValues = true
                         settings.throttleColor = "#00FF00"
                         settings.brakeColor = "#FF0000"
                         settings.absColor = "#5555FF"
-                        settings.lineThickness = 1.2
+                        settings.lineThickness = 1.4
                         settingsPopup.telemetryWindowResetRequested()
                     }
                 }

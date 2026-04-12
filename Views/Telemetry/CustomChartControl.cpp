@@ -102,14 +102,6 @@ void CustomChartControl::setLineThickness(qreal thickness) {
     }
 }
 
-void CustomChartControl::setShowValues(bool show) {
-    if (m_showValues != show) {
-        m_showValues = show;
-        emit showValuesChanged();
-        update();
-    }
-}
-
 void CustomChartControl::appendData(float throttle, float brake, bool abs) {
     m_throttleData.append(throttle);
     m_brakeData.append(brake);
@@ -202,7 +194,7 @@ void CustomChartControl::paint(QPainter *painter) {
     const float totalW = width();
     const float h = height();
 
-    const float leftPad    = m_showValues ? 34.0f : 0.0f;
+    const float leftPad    = 0.0f;
     const float w          = totalW - leftPad;
     const float pad        = 3.0f;
     const float annotationH = m_showPeaks ? 13.0f : 0.0f;
@@ -246,11 +238,100 @@ void CustomChartControl::paint(QPainter *painter) {
         painter->drawPolyline(polygon);
     };
 
-    painter->setCompositionMode(QPainter::CompositionMode_Plus);
+    // Throttle: always normal compositing (drawn first, nothing beneath)
     if (m_showThrottle) drawLine(m_throttleData, m_throttleColor);
-    if (m_showBrake)    drawLine(m_brakeData,    m_brakeColor);
-    if (m_showAbs)      drawLine(m_absData,      m_absColor);
-    painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+
+    // Brake: split into segments — use CompositionMode_Plus only where it overlaps throttle
+    if (m_showBrake && !m_brakeData.isEmpty()) {
+        const bool canOverlap = m_showThrottle && !m_throttleData.isEmpty();
+
+        QPen pen(m_brakeColor);
+        pen.setWidthF(m_lineThickness);
+        pen.setCapStyle(Qt::RoundCap);
+        pen.setJoinStyle(Qt::RoundJoin);
+        painter->setPen(pen);
+
+        const int count = m_brakeData.size();
+        const int tCount = m_throttleData.size();
+        const float dx = count > 1 ? w / static_cast<float>(m_maxPoints - 1) : 0;
+
+        // Tolerance in data-units matching visual line thickness on screen
+        const float tolerance = (drawH > 0.0f)
+            ? (m_lineThickness / drawH) * 100.0f + 1.0f
+            : 1.0f;
+
+        // Detect overlap: values are close OR the lines cross between adjacent samples
+        auto isOverlap = [&](int i) -> bool {
+            if (!canOverlap || i >= tCount) return false;
+
+            const float diff = m_brakeData[i] - m_throttleData[i];
+
+            // Values close enough that the drawn lines visually touch
+            if (std::abs(diff) < tolerance) return true;
+
+            // Lines cross in the segment leading INTO this point
+            if (i > 0 && i - 1 < tCount) {
+                const float prevDiff = m_brakeData[i - 1] - m_throttleData[i - 1];
+                if ((prevDiff > 0.0f) != (diff > 0.0f)) return true;
+            }
+
+            // Lines cross in the segment going OUT of this point
+            if (i + 1 < count && i + 1 < tCount) {
+                const float nextDiff = m_brakeData[i + 1] - m_throttleData[i + 1];
+                if ((diff > 0.0f) != (nextDiff > 0.0f)) return true;
+            }
+
+            return false;
+        };
+
+        QPolygonF segment;
+        bool curOverlap = false;
+
+        for (int i = 0; i < count; ++i) {
+            if (m_brakeData[i] < 0.0f) {
+                // Gap in ABS-filtered data — flush and skip
+                if (segment.size() > 1) painter->drawPolyline(segment);
+                segment.clear();
+                continue;
+            }
+
+            const float x   = i * dx;
+            const float val = qBound(0.0f, m_brakeData[i], 100.0f);
+            const float y   = pad + drawH - (val / 100.0f * drawH);
+            const QPointF pt(x, y);
+
+            const bool overlap = isOverlap(i);
+
+            if (segment.isEmpty()) {
+                // First point of a new segment — set mode
+                painter->setCompositionMode(overlap
+                    ? QPainter::CompositionMode_Plus
+                    : QPainter::CompositionMode_SourceOver);
+                segment.append(pt);
+                curOverlap = overlap;
+            } else if (overlap != curOverlap) {
+                // Overlap state changed — include this point to close the old segment
+                segment.append(pt);
+                if (segment.size() > 1) painter->drawPolyline(segment);
+
+                // Start new segment from the same point with the new mode
+                segment.clear();
+                segment.append(pt);
+                painter->setCompositionMode(overlap
+                    ? QPainter::CompositionMode_Plus
+                    : QPainter::CompositionMode_SourceOver);
+                curOverlap = overlap;
+            } else {
+                segment.append(pt);
+            }
+        }
+
+        if (segment.size() > 1) painter->drawPolyline(segment);
+        painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+    }
+
+    // ABS: always normal compositing
+    if (m_showAbs) drawLine(m_absData, m_absColor);
 
     // --- peak annotations ---
     if (m_showPeaks && m_showBrake && !m_peakAnnotations.isEmpty() && !m_brakeData.isEmpty()) {
@@ -293,48 +374,5 @@ void CustomChartControl::paint(QPainter *painter) {
         painter->restore();
     }
 
-    painter->restore();
-
-	// --- throttle / brake value labels (in the left margin) ---
-	if (m_showValues) {
-		QFont valFont;
-		valFont.setPixelSize(14);
-
-        const float valOpacity = m_lineThickness + 0.2;
-        const float textStroke = m_lineThickness * 0.3f;
-
-		painter->save();
-		painter->setOpacity(valOpacity);
-
-		QPen valPen;
-		valPen.setJoinStyle(Qt::RoundJoin);
-		if (textStroke >= 0.5f)
-			valPen.setWidthF(textStroke);
-		else
-			valPen.setStyle(Qt::NoPen);
-
-        if (m_showThrottle && !m_throttleData.isEmpty()) {
-            const int val = qBound(0, static_cast<int>(m_throttleData.last() + 0.5f), 100);
-            const QString text = QString::number(val);
-            valPen.setColor(m_throttleColor);
-            painter->setPen(valPen);
-            painter->setBrush(m_throttleColor);
-            QPainterPath path;
-            path.addText(QPointF(4, 12), valFont, text);
-            painter->drawPath(path);
-        }
-
-        if (m_showBrake && !m_brakeData.isEmpty()) {
-            const int val = qBound(0, static_cast<int>(m_brakeData.last() + 0.5f), 100);
-            const QString text = QString::number(val);
-            valPen.setColor(m_brakeColor);
-            painter->setPen(valPen);
-            painter->setBrush(m_brakeColor);
-            QPainterPath path;
-            path.addText(QPointF(4, chartH), valFont, text);
-            painter->drawPath(path);
-        }
-
-        painter->restore();
-    }
+	painter->restore();
 }

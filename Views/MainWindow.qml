@@ -22,9 +22,11 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     property bool showAbs: true
     property bool showGridH: true
     property bool showGridV: true
-    property bool showValues: true
     property bool showPeaks: true
-    property bool showPedalInput: false
+    property bool horizontalPedalInput: false
+    property bool showThrottleBar: true
+    property bool showBrakeBar: true
+    property bool showPedalValues: true
     property color throttleColor: "#00FF00"
     property color brakeColor: "#FF0000"
     property color absColor: "#5555FF"
@@ -138,24 +140,26 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
             if (telemetryWinLoader.item) {
                 telemetryWinLoader.item.width = 250
                 telemetryWinLoader.item.height = 100
-                telemetryWinLoader.item.opacity = 0.9
+                telemetryWinLoader.item.opacity = 1.0
             }
         }
     }
 
     // Push settings down to the loaded telemetry window
-    Binding { target: telemetryWinLoader.item; property: "showThrottle";  value: mainWindow.showThrottle;  when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showBrake";     value: mainWindow.showBrake;     when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showAbs";       value: mainWindow.showAbs;       when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showGridH";     value: mainWindow.showGridH;     when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showGridV";     value: mainWindow.showGridV;     when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showValues";    value: mainWindow.showValues;    when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showPeaks";     value: mainWindow.showPeaks;     when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "showPedalInput";value: mainWindow.showPedalInput;when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "throttleColor"; value: mainWindow.throttleColor; when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "brakeColor";    value: mainWindow.brakeColor;    when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "absColor";      value: mainWindow.absColor;      when: telemetryWinLoader.item }
-    Binding { target: telemetryWinLoader.item; property: "lineThickness"; value: mainWindow.lineThickness; when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showThrottle";        value: mainWindow.showThrottle;        when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showBrake";           value: mainWindow.showBrake;           when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showAbs";             value: mainWindow.showAbs;             when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showGridH";           value: mainWindow.showGridH;           when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showGridV";           value: mainWindow.showGridV;           when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showPeaks";           value: mainWindow.showPeaks;           when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "horizontalPedalInput";value: mainWindow.horizontalPedalInput;when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showThrottleBar";     value: mainWindow.showThrottleBar;     when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showBrakeBar";        value: mainWindow.showBrakeBar;        when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "showPedalValues";     value: mainWindow.showPedalValues;     when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "throttleColor";       value: mainWindow.throttleColor;       when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "brakeColor";          value: mainWindow.brakeColor;          when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "absColor";            value: mainWindow.absColor;            when: telemetryWinLoader.item }
+    Binding { target: telemetryWinLoader.item; property: "lineThickness";       value: mainWindow.lineThickness;       when: telemetryWinLoader.item }
 
     Loader { id: telemetryWinLoader
         active: telemetryGraphCheck.checked
@@ -191,9 +195,11 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
         property alias showAbs: mainWindow.showAbs
         property alias showGridH: mainWindow.showGridH
         property alias showGridV: mainWindow.showGridV
-        property alias showValues: mainWindow.showValues
         property alias showPeaks: mainWindow.showPeaks
-        property alias showPedalInput: mainWindow.showPedalInput
+        property alias horizontalPedalInput: mainWindow.horizontalPedalInput
+        property alias showThrottleBar: mainWindow.showThrottleBar
+        property alias showBrakeBar: mainWindow.showBrakeBar
+        property alias showPedalValues: mainWindow.showPedalValues
         property alias throttleColor: mainWindow.throttleColor
         property alias brakeColor: mainWindow.brakeColor
         property alias absColor: mainWindow.absColor

@@ -36,9 +36,10 @@ qt_add_qml_module(${APP_TARGET} URI ${APP_TARGET} VERSION 1.0
         Views/Controls/CustomRadioButton.qml
         Views/Controls/ColorPickerPopup.qml
         Views/Telemetry/TelemetryWindow.qml
-        Views/Telemetry/TelemetryChart.qml
         Views/Telemetry/TelemetrySettingsPopup.qml
-        Views/Telemetry/TelemetryPedalInput.qml)
+        Views/Telemetry/TelemetryPedalInput.qml
+    SOURCES
+        Views/Telemetry/CustomChartControl.h Views/Telemetry/CustomChartControl.cpp)
 
 target_include_directories(${APP_TARGET} PRIVATE "third_party/irsdk 1.18/irsdk")
 
