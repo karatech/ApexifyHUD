@@ -6,10 +6,12 @@
 #include <QSurfaceFormat>
 #include <QUrl>
 #include "ViewModels/Telemetry/TelemetryChartVM.h"
+#include "ViewModels/Essentials/EssentialsVM.h"
 #include "Views/Telemetry/CustomChartControl.h"
 #include "ViewModels/MainWindowVM.h"
 
 using namespace ApexifyHUD::ViewModels::Telemetry;
+using namespace ApexifyHUD::ViewModels::Essentials;
 using namespace ApexifyHUD::ViewModels;
 using namespace ApexifyHUD::Views::Telemetry;
 
@@ -37,11 +39,13 @@ int main(int argc, char* argv[]) {
     QQmlApplicationEngine engine;
 
     TelemetryChartVM telemetryChartVM;
+    EssentialsVM essentialsVM;
     MainWindowVM mainWindowVM;
 
     const QUrl ibtLogFolderUrl = QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/ibt log files");
 
     engine.rootContext()->setContextProperty("telemetryChartVM", &telemetryChartVM);
+    engine.rootContext()->setContextProperty("essentialsVM", &essentialsVM);
     engine.rootContext()->setContextProperty("mainWindowVM", &mainWindowVM);
     engine.rootContext()->setContextProperty("ibtLogFolderUrl", ibtLogFolderUrl);
 
@@ -50,6 +54,7 @@ int main(int argc, char* argv[]) {
     if (engine.rootObjects().isEmpty()) return -1;
 
     telemetryChartVM.start();
+    essentialsVM.start();
 
     auto ret = app.exec();
 

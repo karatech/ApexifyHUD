@@ -65,6 +65,14 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
             }
         }
 
+        CustomCheckBox { id: essentialsCheck; compact: false;
+            text: "Essentials"; enabled: true
+            onCheckedChanged: {
+                essentialsWinLoader.active = checked
+                if (checked && essentialsWinLoader.item) essentialsWinLoader.item.visible = true
+            }
+        }
+
         CustomCheckBox { id: liveRadar
             text: "Live Radar"; enabled: false; Layout.fillWidth: true
             onCheckedChanged: {
@@ -179,6 +187,25 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
         }
     }
 
+    // Push background color to the essentials window
+    Binding { target: essentialsWinLoader.item; property: "backgroundColor"; value: mainWindow.backgroundColor; when: essentialsWinLoader.item }
+
+    Loader { id: essentialsWinLoader
+        active: essentialsCheck.checked
+        source: "Essentials/EssentialsWindow.qml"
+
+        onLoaded: {
+            if (item) {
+                item.visible = true
+                item.visibleChanged.connect(function() {
+                    if (!item.visible && essentialsCheck.checked) {
+                        essentialsCheck.checked = false
+                    }
+                })
+            }
+        }
+    }
+
     Settings {
         id: windowSettings
         category: "MainWindow"
@@ -189,6 +216,7 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
         property alias height: mainWindow.height
 
         property alias telemetryGraphChecked: telemetryGraphCheck.checked
+        property alias essentialsChecked: essentialsCheck.checked
         property alias liveRadarChecked: liveRadar.checked
         property alias mapChecked: map.checked
 

@@ -38,6 +38,7 @@ qt_add_qml_module(${APP_TARGET} URI ${APP_TARGET} VERSION 1.0
         Views/Telemetry/TelemetryWindow.qml
         Views/Telemetry/TelemetrySettingsPopup.qml
         Views/Telemetry/TelemetryPedalInput.qml
+        Views/Essentials/EssentialsWindow.qml
     SOURCES
         Views/Telemetry/CustomChartControl.h Views/Telemetry/CustomChartControl.cpp)
 
