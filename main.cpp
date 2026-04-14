@@ -5,11 +5,13 @@
 #include <QIcon>
 #include <QSurfaceFormat>
 #include <QUrl>
+#include "Model/IrsdkDataProvider.h"
 #include "ViewModels/Telemetry/TelemetryChartVM.h"
 #include "ViewModels/Essentials/EssentialsVM.h"
 #include "Views/Telemetry/CustomChartControl.h"
 #include "ViewModels/MainWindowVM.h"
 
+using namespace ApexifyHUD::Model;
 using namespace ApexifyHUD::ViewModels::Telemetry;
 using namespace ApexifyHUD::ViewModels::Essentials;
 using namespace ApexifyHUD::ViewModels;
@@ -38,9 +40,22 @@ int main(int argc, char* argv[]) {
 
     QQmlApplicationEngine engine;
 
+    // Single SDK poller — one timer, one waitForData call
+    IrsdkDataProvider dataProvider;
     TelemetryChartVM telemetryChartVM;
     EssentialsVM essentialsVM;
     MainWindowVM mainWindowVM;
+
+    // Both VMs driven by the shared provider
+    QObject::connect(&dataProvider, &IrsdkDataProvider::statusChanged,
+                     &telemetryChartVM, &TelemetryChartVM::onStatusChanged);
+    QObject::connect(&dataProvider, &IrsdkDataProvider::dataReady,
+                     &telemetryChartVM, &TelemetryChartVM::onDataReady);
+
+    QObject::connect(&dataProvider, &IrsdkDataProvider::statusChanged,
+                     &essentialsVM, &EssentialsVM::onStatusChanged);
+    QObject::connect(&dataProvider, &IrsdkDataProvider::dataReady,
+                     &essentialsVM, &EssentialsVM::onDataReady);
 
     const QUrl ibtLogFolderUrl = QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/ibt log files");
 
@@ -53,8 +68,7 @@ int main(int argc, char* argv[]) {
 
     if (engine.rootObjects().isEmpty()) return -1;
 
-    telemetryChartVM.start();
-    essentialsVM.start();
+    dataProvider.start();
 
     auto ret = app.exec();
 

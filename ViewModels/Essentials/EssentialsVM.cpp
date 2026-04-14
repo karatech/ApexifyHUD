@@ -1,5 +1,6 @@
 #include "EssentialsVM.h"
 
+#include "irsdk_defines.h"
 #include "irsdk_client.h"
 
 #include <cstdlib>
@@ -9,14 +10,6 @@ using namespace ApexifyHUD::ViewModels::Essentials;
 EssentialsVM::EssentialsVM(QObject* parent)
     : QObject(parent)
 {
-    connect(&m_timer, &QTimer::timeout, this, &EssentialsVM::onTimerTick);
-    m_timer.setInterval(16); // ~60 Hz
-    m_timer.setTimerType(Qt::CoarseTimer);
-}
-
-void EssentialsVM::start()
-{
-    m_timer.start();
 }
 
 void EssentialsVM::refreshShiftLightRpm()
@@ -36,30 +29,23 @@ void EssentialsVM::refreshShiftLightRpm()
     }
 }
 
-void EssentialsVM::onTimerTick()
+void EssentialsVM::onStatusChanged()
+{
+    m_varIdxSpeed = -1;
+    m_varIdxGear = -1;
+    m_varIdxLapTime = -1;
+    m_varIdxPosition = -1;
+    m_varIdxFuelLevel = -1;
+    m_varIdxTrackTemp = -1;
+    m_varIdxAirTemp = -1;
+    m_varIdxRpm = -1;
+    m_sessionInfoRead = false;
+}
+
+void EssentialsVM::onDataReady()
 {
     irsdkClient& c = irsdkClient::instance();
 
-    const bool hasNew = c.waitForData(0);
-
-    const int status = c.getStatusID();
-    if (status != m_lastStatusId) {
-        m_lastStatusId = status;
-        m_varIdxSpeed = -1;
-        m_varIdxGear = -1;
-        m_varIdxLapTime = -1;
-        m_varIdxPosition = -1;
-        m_varIdxFuelLevel = -1;
-        m_varIdxTrackTemp = -1;
-        m_varIdxAirTemp = -1;
-        m_varIdxRpm = -1;
-        m_sessionInfoRead = false;
-    }
-
-    if (!hasNew || !c.isConnected())
-        return;
-
-    // Read shift-light RPM thresholds from session YAML once per connection
     if (!m_sessionInfoRead) {
         refreshShiftLightRpm();
         m_sessionInfoRead = true;

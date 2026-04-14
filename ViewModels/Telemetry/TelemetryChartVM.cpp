@@ -7,14 +7,6 @@ using namespace ApexifyHUD::ViewModels::Telemetry;
 TelemetryChartVM::TelemetryChartVM(QObject* parent)
     : QObject(parent)
 {
-    connect(&m_timer, &QTimer::timeout, this, &TelemetryChartVM::onTimerTick);
-    m_timer.setInterval(16); // use 16 for ~60 Hz
-    m_timer.setTimerType(Qt::CoarseTimer);
-}
-
-void TelemetryChartVM::start()
-{
-    m_timer.start();
 }
 
 int TelemetryChartVM::toPercent(float value01)
@@ -27,22 +19,16 @@ int TelemetryChartVM::toPercent(float value01)
     return static_cast<int>(value01 * 100.0f + 0.5f);
 }
 
-void TelemetryChartVM::onTimerTick()
+void TelemetryChartVM::onStatusChanged()
+{
+    m_varIdxThrottle = -1;
+    m_varIdxBrake = -1;
+    m_varIdxAbs = -1;
+}
+
+void TelemetryChartVM::onDataReady()
 {
     irsdkClient& c = irsdkClient::instance();
-
-    const bool hasNew = c.waitForData(0);
-
-    const int status = c.getStatusID();
-    if (status != m_lastStatusId) {
-        m_lastStatusId = status;
-        m_varIdxThrottle = -1;
-        m_varIdxBrake = -1;
-        m_varIdxAbs = -1;
-    }
-
-    if (!hasNew || !c.isConnected())
-        return;
 
     if (m_varIdxThrottle < 0)
         m_varIdxThrottle = c.getVarIdx("Throttle");

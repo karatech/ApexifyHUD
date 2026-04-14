@@ -1,6 +1,5 @@
 #pragma once
 #include <QObject>
-#include <QTimer>
 
 #include "irsdk_defines.h"
 
@@ -30,18 +29,15 @@ namespace ApexifyHUD::ViewModels::Essentials
         double airTemp() const { return m_airTemp; }
         double rpmPercent() const { return m_rpmPercent; }
 
-        void start();
+    public slots:
+        void onStatusChanged();
+        void onDataReady();
 
     signals:
         void dataChanged();
 
-    private slots:
-        void onTimerTick();
-
     private:
         void refreshShiftLightRpm();
-
-        QTimer m_timer;
 
         int m_speed = 0;
         int m_gear = 0;
@@ -61,7 +57,6 @@ namespace ApexifyHUD::ViewModels::Essentials
         int m_varIdxAirTemp = -1;
         int m_varIdxRpm = -1;
 
-        int m_lastStatusId = -1;
         bool m_sessionInfoRead = false;
 
         float m_slFirstRpm = 3000.0f;

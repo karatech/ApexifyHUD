@@ -1,6 +1,5 @@
 #pragma once
 #include <QObject>
-#include <QTimer>
 
 #include "irsdk_defines.h"
 
@@ -20,7 +19,9 @@ namespace ApexifyHUD::ViewModels::Telemetry
         int brake() const { return m_brake; }
         bool abs() const { return m_abs; }
 
-        void start();
+    public slots:
+        void onStatusChanged();
+        void onDataReady();
 
     signals:
         void tick();
@@ -29,13 +30,9 @@ namespace ApexifyHUD::ViewModels::Telemetry
         void brakeChanged();
         void absChanged();
 
-    private slots:
-        void onTimerTick();
-
     private:
         static int toPercent(float value01);
 
-        QTimer m_timer;
         int m_throttle = 0;
         int m_brake = 0;
         bool m_abs = false;
@@ -43,6 +40,5 @@ namespace ApexifyHUD::ViewModels::Telemetry
         int m_varIdxThrottle = -1;
         int m_varIdxBrake = -1;
         int m_varIdxAbs = -1;
-        int m_lastStatusId = -1;
     };
 }

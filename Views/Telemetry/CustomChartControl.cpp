@@ -11,6 +11,10 @@ using namespace ApexifyHUD::Views::Telemetry;
 CustomChartControl::CustomChartControl(QQuickItem *parent) : QQuickPaintedItem(parent) {
     setAntialiasing(true);
     setRenderTarget(QQuickPaintedItem::FramebufferObject);
+
+    m_throttleData.setCapacity(m_maxPoints);
+    m_brakeData.setCapacity(m_maxPoints);
+    m_absData.setCapacity(m_maxPoints);
 }
 
 void CustomChartControl::setThrottleColor(const QColor &color) {
@@ -41,6 +45,9 @@ void CustomChartControl::setAbsColor(const QColor &color)
 void CustomChartControl::setMaxPoints(int points) {
     if (m_maxPoints != points) {
         m_maxPoints = points;
+        m_throttleData.setCapacity(points);
+        m_brakeData.setCapacity(points);
+        m_absData.setCapacity(points);
         emit maxPointsChanged();
     }
 }
@@ -106,10 +113,6 @@ void CustomChartControl::appendData(float throttle, float brake, bool abs) {
     m_throttleData.append(throttle);
     m_brakeData.append(brake);
     m_absData.append(abs ? brake : -1.0f);
-
-    if (m_throttleData.size() > m_maxPoints) m_throttleData.removeFirst();
-    if (m_brakeData.size() > m_maxPoints) m_brakeData.removeFirst();
-    if (m_absData.size() > m_maxPoints) m_absData.removeFirst();
 
     m_globalSampleCount++;
 
@@ -207,7 +210,7 @@ void CustomChartControl::paint(QPainter *painter) {
 
     paintGrid(painter, w, pad, chartH, drawH);
 
-    auto drawLine = [painter, w, pad, drawH, this](const QVector<float> &data, const QColor &color) {
+    auto drawLine = [painter, w, pad, drawH, this](const RingBuffer &data, const QColor &color) {
         if (data.isEmpty()) return;
 
         QPen pen(color);

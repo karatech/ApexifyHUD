@@ -11,6 +11,36 @@ namespace ApexifyHUD::Views::Telemetry
         int value;         // brake percentage 0–100
     };
 
+    // O(1) append + O(1) indexed access ring buffer for chart data
+    class RingBuffer {
+    public:
+        void setCapacity(int cap) { m_data.resize(cap); m_head = 0; m_size = 0; }
+        int capacity() const { return m_data.size(); }
+        int size() const { return m_size; }
+        bool isEmpty() const { return m_size == 0; }
+
+        void append(float v) {
+            const int cap = m_data.size();
+            if (m_size < cap) {
+                m_data[(m_head + m_size) % cap] = v;
+                ++m_size;
+            } else {
+                m_data[m_head] = v;
+                m_head = (m_head + 1) % cap;
+            }
+        }
+
+        // Index 0 = oldest, index size()-1 = newest
+        float operator[](int i) const { return m_data[(m_head + i) % m_data.size()]; }
+
+        void clear() { m_head = 0; m_size = 0; }
+
+    private:
+        QVector<float> m_data;
+        int m_head = 0;
+        int m_size = 0;
+    };
+
     class CustomChartControl : public QQuickPaintedItem {
         Q_OBJECT
         Q_PROPERTY(QColor throttleColor READ throttleColor WRITE setThrottleColor NOTIFY throttleColorChanged)
@@ -82,9 +112,9 @@ namespace ApexifyHUD::Views::Telemetry
     private:
         void paintGrid(QPainter* painter, float w, float pad, float chartH, float drawH) const;
 
-        QVector<float> m_throttleData;
-        QVector<float> m_brakeData;
-        QVector<float> m_absData;
+        RingBuffer m_throttleData;
+        RingBuffer m_brakeData;
+        RingBuffer m_absData;
 
         QColor m_throttleColor = QColor("#00FF00");
         QColor m_brakeColor = QColor("#FF0000");
