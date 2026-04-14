@@ -28,6 +28,9 @@ Controls.Popup {
     ColorPickerPopup { id: absColorPicker; currentColor: settings.absColor
         onColorPicked: (c) => { settings.absColor = c }
     }
+    ColorPickerPopup { id: bgColorPicker; currentColor: settings.backgroundColor
+        onColorPicked: (c) => { settings.backgroundColor = c }
+    }
 
     RowLayout { spacing: 0
 
@@ -129,6 +132,19 @@ Controls.Popup {
 
             Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 10; Layout.bottomMargin: 10 }
 
+            Controls.Label { text: "Appearance"; color: "#999"; font.pixelSize: 12; font.bold: true }
+
+            RowLayout { spacing: 4; Layout.fillWidth: true
+                Controls.Label { text: "Background"; color: "#CCCCCC"; font.pixelSize: 12; Layout.fillWidth: true }
+                Rectangle { width: 14; height: 14; radius: 3; color: settings.backgroundColor; border.color: "#555"; border.width: 1
+                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                        onClicked: (mouse) => bgColorPicker.visible ? bgColorPicker.close() : openPickerAt(bgColorPicker, this, mouse)
+                    }
+                }
+            }
+
+            Rectangle { width: parent.width; height: 1; color: "#444"; Layout.topMargin: 10; Layout.bottomMargin: 10 }
+
             Rectangle { width: parent.width; height: 18; radius: 3; color: resetArea.containsMouse ? "#333" : "transparent"
                 Text { anchors.centerIn: parent; text: "Reset"; color: "#999"; font.pixelSize: 14 }
                 MouseArea { id: resetArea; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true
@@ -147,6 +163,7 @@ Controls.Popup {
                         settings.brakeColor = "#FF0000"
                         settings.absColor = "#5555FF"
                         settings.lineThickness = 1.4
+                        settings.backgroundColor = "#1E1E1E"
                         settingsPopup.telemetryWindowResetRequested()
                     }
                 }

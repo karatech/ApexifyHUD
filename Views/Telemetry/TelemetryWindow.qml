@@ -26,6 +26,7 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
     property alias throttleColor: telemetryChart.throttleColor
     property alias brakeColor: telemetryChart.brakeColor
     property alias absColor: telemetryChart.absColor
+    property color backgroundColor: "#1E1E1E"
 
     readonly property bool _anyBarVisible: root.showThrottleBar || root.showBrakeBar
 
@@ -51,7 +52,7 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
     }
 
     Rectangle { id: telemetryRectangle; radius: 4; clip: true
-        anchors.fill: parent; color: telemetryChart.Material.background
+        anchors.fill: parent; color: root.backgroundColor
 
         ColumnLayout { anchors.fill: parent; spacing: 0
 
