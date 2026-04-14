@@ -3,6 +3,7 @@ import QtQuick 6.9
 import QtQuick.Controls 6.9
 import QtQuick.Layouts 6.9
 import Qt.labs.settings 1.1
+import "../Controls"
 
 Window { id: root; width: 340; height: 170; x: 400; y: 100; minimumWidth: 200; minimumHeight: 120
     flags: Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
@@ -11,6 +12,8 @@ Window { id: root; width: 340; height: 170; x: 400; y: 100; minimumWidth: 200; m
     transientParent: null
 
     property color backgroundColor: "#1E1E1E"
+
+    property var snapTargets: []
 
     function clampOpacity(v) { return Math.min(1.0, Math.max(0.4, v)); }
     Component.onCompleted: { root.opacity = clampOpacity(windowSettings.opacity) }
@@ -116,27 +119,8 @@ Window { id: root; width: 340; height: 170; x: 400; y: 100; minimumWidth: 200; m
         }
     }
 
-    // drag anywhere to move the window
-    MouseArea { anchors.fill: parent; acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-
-        onPressed: (mouse) => {
-            if (mouse.button === Qt.MiddleButton) {
-                root.visible = false
-                return
-            }
-            if (mouse.button === Qt.LeftButton) {
-                if (mouse.modifiers & Qt.CTRL)
-                    root.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
-                else
-                    root.startSystemMove()
-            }
-        }
-
-        onWheel: (wheel) => {
-            let step = wheel.angleDelta.y > 0 ? 0.05 : -0.05
-            root.opacity = clampOpacity(root.opacity + step)
-        }
-    }
+    // Snap-aware drag, resize, hide, opacity
+    SnapDragArea { targetWindow: root; snapTargets: root.snapTargets }
 
     Settings { id: windowSettings; category: "EssentialsWindow"
         property alias x: root.x

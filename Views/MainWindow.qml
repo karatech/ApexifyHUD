@@ -171,6 +171,10 @@ ApplicationWindow { id: mainWindow; title: "ApexifyHUD"
     Binding { target: telemetryWinLoader.item; property: "lineThickness";       value: mainWindow.lineThickness;       when: telemetryWinLoader.item }
     Binding { target: telemetryWinLoader.item; property: "backgroundColor";     value: mainWindow.backgroundColor;     when: telemetryWinLoader.item }
 
+    // Wire snap targets: each overlay window snaps to all the others
+    Binding { target: telemetryWinLoader.item; property: "snapTargets"; value: [essentialsWinLoader.item]; when: telemetryWinLoader.item }
+    Binding { target: essentialsWinLoader.item; property: "snapTargets"; value: [telemetryWinLoader.item]; when: essentialsWinLoader.item }
+
     Loader { id: telemetryWinLoader
         active: telemetryGraphCheck.checked
         source: "Telemetry/TelemetryWindow.qml"

@@ -4,6 +4,7 @@ import QtQuick.Controls 6.9
 import QtQuick.Layouts 6.9
 import Qt.labs.settings 1.1
 import App 1.0
+import "../Controls"
 
 Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; minimumHeight: 50
     flags: Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
@@ -27,6 +28,8 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
     property alias brakeColor: telemetryChart.brakeColor
     property alias absColor: telemetryChart.absColor
     property color backgroundColor: "#1E1E1E"
+
+    property var snapTargets: []
 
     readonly property bool _anyBarVisible: root.showThrottleBar || root.showBrakeBar
 
@@ -103,32 +106,10 @@ Window { id: root; width: 250; height: 100; x: 100; y: 100; minimumWidth: 100; m
         }
     }
 
-    // drag anywhere to move the *window*
-    MouseArea { anchors.fill: parent; acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+    // Snap-aware drag, resize, hide, opacity
+    SnapDragArea { targetWindow: root; snapTargets: root.snapTargets }
 
-        onPressed: (mouse) => {
-            if (mouse.button === Qt.MiddleButton) {
-                root.visible = false // Middle Click to Hide
-                return
-            }
-            if (mouse.button === Qt.LeftButton) {
-                if (mouse.modifiers & Qt.CTRL) {
-                    // Ctrl + Left Click to Resize
-                    root.startSystemResize(Qt.RightEdge | Qt.BottomEdge)
-                } else {
-                    // Normal Left Click override to Move
-                    root.startSystemMove()
-                }
-            }
-        }
-
-        onWheel: (wheel) => {
-            let step = wheel.angleDelta.y > 0 ? 0.05 : -0.05
-            root.opacity = clampOpacity(root.opacity + step)
-        }
-    }
-
-        Settings { id: windowSettings; category: "TelemetryWindow"
+    Settings { id: windowSettings; category: "TelemetryWindow"
 
         // Using aliases automatically restores values on load and saves on change
         property alias x: root.x
