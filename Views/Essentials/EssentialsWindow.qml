@@ -40,13 +40,27 @@ Window { id: root; width: 340; height: 170; x: 400; y: 100; minimumWidth: 200; m
         ColumnLayout { anchors.fill: parent; anchors.margins: 8; spacing: 4
 
             // ---- Rev LEDs bar ----
-            RowLayout { Layout.fillWidth: true; spacing: 2
+            RowLayout { 
+                id: ledsRow
+                Layout.fillWidth: true; spacing: 2
+
+                property bool shiftBlink: essentialsVM.rpmPercent >= 1.0
+                property bool toggleState: true
+
+                Timer {
+                    running: ledsRow.shiftBlink
+                    repeat: true
+                    interval: 80
+                    onTriggered: ledsRow.toggleState = !ledsRow.toggleState
+                    onRunningChanged: if (!running) ledsRow.toggleState = true
+                }
+
                 Repeater { model: 15
                     Rectangle {
                         required property int index
                         Layout.fillWidth: true; implicitHeight: 8; radius: 2
 
-                        readonly property bool lit: essentialsVM.rpmPercent >= (index + 1) / 15.0
+                        readonly property bool lit: essentialsVM.rpmPercent >= ((index + 1) / 15.0) * 0.9
 
                         color: {
                             if (!lit) return "#333333"
@@ -54,7 +68,10 @@ Window { id: root; width: 340; height: 170; x: 400; y: 100; minimumWidth: 200; m
                             if (index < 10) return "#FF8800"
                             return "#FF0000"
                         }
-                        opacity: lit ? 1.0 : 0.3
+                        opacity: {
+                            if (ledsRow.shiftBlink && !ledsRow.toggleState) return 0.0
+                            return lit ? 1.0 : 0.3
+                        }
                     }
                 }
             }
